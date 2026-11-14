@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ФФ — личный кабинет</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f2f5f9;color:#192d45;font-family:Arial,sans-serif}
+header{background:#142b45;color:white;padding:20px}
+.brand{font-size:23px;font-weight:bold}
+.brand span{font-size:13px;color:#bdcada;display:block;margin-top:5px}
+main{max-width:900px;margin:30px auto;padding:0 18px}
+h1{font-size:26px;margin-bottom:8px}
+.muted{color:#77869a;font-size:14px}
+.panel{background:white;border:1px solid #e5eaf0;border-radius:13px;padding:20px;margin-top:20px}
+input{width:100%;padding:13px;border:1px solid #dce3ec;border-radius:8px;font-size:15px;margin:8px 0}
+button{background:#2764d8;color:white;border:0;border-radius:8px;padding:13px 20px;font-size:15px;cursor:pointer}
+button:hover{background:#174eae}
+.hidden{display:none}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{text-align:left;padding:13px 9px;border-bottom:1px solid #edf0f4;font-size:14px}
+th{color:#718096;font-size:12px}
+.right{text-align:right}
+.qty{font-weight:bold}
+.tag{color:#16865b;background:#e8f6ef;padding:5px 9px;border-radius:15px;font-size:12px}
+.note{font-size:12px;color:#8995a5;margin-top:18px}
+@media(max-width:600px){main{margin:20px auto}th,td{font-size:12px;padding:11px 5px}}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="brand">ФФ
+  <span>Личный кабинет клиента</span>
+ </div>
+</header>
+
+<main>
+
+<section id="login" class="panel">
+ <h1>Вход в личный кабинет</h1>
+ <p class="muted">Введите данные для доступа к своим остаткам</p>
+ <input id="username" placeholder="Логин">
+ <input id="password" type="password" placeholder="Пароль">
+ <button onclick="login()">Войти</button>
+ <p id="error" style="color:#c33;font-size:13px"></p>
+ <p class="note">Демонстрационный вход: dronova / 12345</p>
+</section>
+
+<section id="cabinet" class="hidden">
+ <h1>Мои остатки</h1>
+ <p class="muted">Клиент: <b>ИП Дронова Е.В.</b></p>
+
+ <div class="panel">
+  <p class="muted">Ваш склад</p>
+  <b>Склад Дроновой</b>
+  <p class="muted">Товары и количество на текущем складе</p>
+ </div>
+
+ <div class="panel">
+  <input id="search" placeholder="Поиск по названию или артикулу" oninput="showProducts()">
+  <div style="overflow-x:auto">
+   <table>
+    <thead>
+     <tr>
+      <th>Товар</th>
+      <th>Артикул</th>
+      <th class="right">Остаток</th>
+     </tr>
+    </thead>
+    <tbody id="products"></tbody>
+   </table>
+  </div>
+  <p class="note">Демонстрационные данные. Подключение реальных остатков из МойСклад будет следующим этапом.</p>
+ </div>
+ <button onclick="logout()">Выйти</button>
+</section>
+
+</main>
+
+<script>
+const items=[
+ ["Тюль Серые листья 200х250","TL-SL-200250",120],
+ ["Тюль Серые листья 200х240","TL-SL-200240",84],
+ ["Тюль Штрихи 500х260","TL-SH-500260",215],
+ ["Комплект постельного белья","KP-001",96],
+ ["Плед велсофт","PL-VS-02",0],
+ ["Шторы блэкаут","SH-BL-150",340],
+ ["Наволочка декоративная","NV-4040",189],
+ ["Покрывало стёганое","PK-220",240]
+];
+
+function login(){
+ const u=document.getElementById("username").value;
+ const p=document.getElementById("password").value;
+ if(u==="dronova" && p==="12345"){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("cabinet").classList.remove("hidden");
+  showProducts();
+ }else{
+  document.getElementById("error").textContent="Неверный логин или пароль";
+ }
+}
+
+function showProducts(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const filtered=items.filter(x=>(x[0]+" "+x[1]).toLowerCase().includes(q));
+ document.getElementById("products").innerHTML=filtered.map(x=>
+ `<tr>
+ <td>${x[0]}</td>
+ <td>${x[1]}</td>
+ <td class="right qty">${x[2]} шт.</td>
+ </tr>`
+ ).join("");
+}
+
+function logout(){
+ document.getElementById("cabinet").classList.add("hidden");
+ document.getElementById("login").classList.remove("hidden");
+ document.getElementById("password").value="";
+}
+</script>
+
+</body>
+</html>
