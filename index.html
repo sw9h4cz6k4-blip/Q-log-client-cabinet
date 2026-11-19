@@ -129,6 +129,168 @@ th{color:var(--muted);font-size:11px;white-space:nowrap}
   .card-title{font-size:14px}.metric{font-size:26px}
   .action-card{min-height:88px}
 }
+
+/* Q-log visual refresh: unified client dashboard */
+:root{
+  --navy:#102b4d;--navy2:#0b1f3a;--blue:#2468d8;--blue2:#1855bd;
+  --pale:#eaf2ff;--bg:#f3f6fb;--text:#172d49;--muted:#71839a;
+  --line:#e5ebf3;--white:#fff;--green:#16865b;--orange:#d98219;
+  --shadow:0 10px 30px rgba(20,49,86,.075);
+}
+body{
+  background:
+    radial-gradient(ellipse at 10% 0%,rgba(57,119,210,.08),transparent 34%),
+    #f3f6fb;
+  color:var(--text);
+  font-family:Inter,Arial,Helvetica,sans-serif;
+  letter-spacing:-.01em;
+}
+.topbar{
+  min-height:78px;
+  padding:15px max(22px,calc((100% - 1160px)/2));
+  background:linear-gradient(112deg,#0b1f3a 0%,#123c6c 58%,#1d5aa0 100%);
+  box-shadow:0 5px 22px rgba(8,31,59,.14);
+}
+.brand{gap:12px;font-size:24px;letter-spacing:-.035em}
+.brand-mark{
+  width:42px;height:42px;border-radius:14px;
+  background:linear-gradient(145deg,#70b6ff,#2468d8);
+  box-shadow:0 5px 15px #061c3a55,inset 0 1px 4px #ffffff70;
+  font-size:0;position:relative;
+}
+.brand-mark:before{
+  content:"Q";font-size:23px;font-weight:800;color:#fff;
+}
+.brand-sub{font-size:11px;letter-spacing:.02em;color:#c5d8f0}
+.top-actions{gap:14px;font-size:12px}
+.icon-btn{width:39px;height:39px;padding:0;border-radius:13px;font-size:17px}
+main{max-width:1160px;margin:27px auto 112px;padding:0 22px}
+.welcome{
+  min-height:166px;padding:30px 34px;margin-bottom:22px;border-radius:24px;
+  background:linear-gradient(112deg,#102f56 0%,#1c5aa2 68%,#4e91d8 100%);
+  box-shadow:0 14px 34px rgba(24,76,137,.16);
+}
+.welcome:after{
+  width:310px;height:310px;border-width:42px;right:-35px;top:-112px;
+  box-shadow:0 0 0 34px #ffffff08,0 0 0 70px #ffffff05;
+}
+.welcome h1{font-size:30px;font-weight:750;letter-spacing:-.035em;margin-bottom:9px}
+.welcome p{font-size:14px;color:#e0edff}
+.welcome-tag{
+  margin-top:19px;padding:8px 13px;border:1px solid #ffffff25;
+  background:#ffffff17;font-size:11px;letter-spacing:.02em
+}
+.grid,.action-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.action-grid{margin-top:17px}
+.card{
+  border:1px solid rgba(222,231,243,.95);border-radius:21px;
+  box-shadow:var(--shadow);background:#fff;
+}
+.metric-card{
+  min-height:166px;padding:20px 21px;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.metric-card:after{width:145px;height:145px;background:linear-gradient(145deg,#eff5ff,#e5efff);right:-60px;top:-62px}
+.metric-card:hover,.action-card:hover{
+  transform:translateY(-3px);border-color:#c5d8f4;
+  box-shadow:0 15px 32px rgba(24,76,137,.12)
+}
+.card-top{align-items:center}
+.card-icon,.action-icon,.event-icon{
+  width:48px;height:48px;border-radius:15px;
+  background:linear-gradient(145deg,#edf4ff,#e2edff);
+  color:#2869cf;display:grid;place-items:center;font-size:0;
+  box-shadow:inset 0 0 0 1px #dce9fb;
+}
+.card-icon:before,.action-icon:before,.event-icon:before{
+  font-size:22px;font-weight:700;line-height:1
+}
+.metric-card:nth-child(1) .card-icon:before{content:"▦"}
+.metric-card:nth-child(2) .card-icon:before{content:"⇧"}
+.metric-card:nth-child(3) .card-icon:before{content:"₽"}
+.card-title{font-size:16px;font-weight:750;letter-spacing:-.02em;margin-top:15px}
+.metric{font-size:31px;letter-spacing:-.04em;color:#173b68;margin-top:7px}
+.card-sub{font-size:12px;color:#8291a6;margin-top:4px}
+.arrow{font-size:24px;color:#6b94ce;font-weight:500}
+.action-card{
+  min-height:166px;padding:20px 21px;display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:space-between;gap:12px;
+  position:relative;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.action-icon{width:48px;height:48px;flex:0 0 48px}
+.action-card:nth-child(1) .action-icon:before{content:"↗"}
+.action-card:nth-child(2) .action-icon:before{content:"↶"}
+.action-card:nth-child(3) .action-icon:before{content:"✓"}
+.action-card strong{display:block;font-size:16px;font-weight:750;margin-bottom:5px;letter-spacing:-.02em}
+.action-card span{font-size:12px;color:var(--muted)}
+.action-card>.arrow{position:absolute;right:19px;top:20px}
+.help{
+  margin-top:19px;border-radius:21px;padding:20px 24px;
+  background:linear-gradient(110deg,#12345e,#1d5da8);
+  box-shadow:0 10px 26px rgba(17,63,115,.14)
+}
+.help strong{font-size:16px}.help p{font-size:12px;color:#d9e8fb}
+.help button{border-radius:12px;padding:12px 17px;box-shadow:0 3px 9px #09284c20}
+.events{margin-top:19px;border-radius:21px}
+.events-head{padding:20px 23px}
+.events-head h2{font-size:17px;letter-spacing:-.02em}
+.events-head a{font-weight:650}
+.event{padding:16px 23px}
+.event-icon{width:42px;height:42px;flex:0 0 42px;border-radius:14px}
+.event-icon:before{content:"↗"}
+.event:nth-child(3) .event-icon:before{content:"₽"}
+.event-main strong{font-size:13px}
+.event-main span{font-size:12px}
+.login-wrap{max-width:440px;margin:66px auto}
+.login-wrap .card{padding:30px;border-radius:23px}
+.login-wrap h1{font-size:24px;letter-spacing:-.03em}
+input{border-color:#dfe7f1;border-radius:13px;padding:14px 15px}
+.primary{border-radius:13px;background:linear-gradient(110deg,#276cdb,#1b56bb);box-shadow:0 5px 13px #2468d82b}
+.primary:hover{background:linear-gradient(110deg,#205fc9,#164ca9)}
+.section-view{margin-top:22px}
+.section-view .card{padding:26px;border-radius:22px}
+.section-view h2{font-size:22px;letter-spacing:-.03em}
+.section-view .back{border-radius:12px}
+.stock-toolbar input{border-radius:12px}
+table{border-collapse:separate;border-spacing:0}
+th{background:#f6f8fc;padding-top:14px;padding-bottom:14px}
+td{padding-top:14px;padding-bottom:14px}
+.bottom-nav{
+  bottom:16px;width:min(700px,calc(100% - 28px));padding:8px;
+  border-radius:21px;background:linear-gradient(110deg,#0c2340,#173f6c);
+  box-shadow:0 14px 38px rgba(9,34,64,.25)
+}
+.nav-item{border-radius:15px;padding:9px 5px;font-size:11px;transition:background .15s ease}
+.nav-item b{font-size:18px;margin-bottom:5px}
+.nav-item.active{background:linear-gradient(120deg,#347ce5,#2462c8);box-shadow:0 3px 10px #061c3b45}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aaf0;outline-offset:3px}
+@media(max-width:760px){
+  main{margin:16px auto 105px;padding:0 13px}
+  .topbar{padding:13px 15px;min-height:68px}
+  .grid,.action-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+  .action-grid{margin-top:11px}
+  .metric-card,.action-card{min-height:145px;padding:15px;border-radius:18px}
+  .card-icon,.action-icon{width:43px;height:43px;border-radius:13px}
+  .card-title,.action-card strong{font-size:14px}
+  .metric{font-size:27px}
+  .welcome{padding:23px 21px;min-height:139px;border-radius:19px;margin-bottom:13px}
+  .welcome h1{font-size:25px}
+  .welcome-tag{margin-top:14px}
+  .help{padding:17px;border-radius:18px}
+  .events-head{padding:16px}
+  .event{padding:13px 15px}
+  .bottom-nav{bottom:9px}
+}
+@media(max-width:390px){
+  .brand{font-size:21px}.brand-mark{width:38px;height:38px}
+  .top-actions{font-size:10px;gap:6px}
+  .grid,.action-grid{gap:8px}
+  .metric-card,.action-card{padding:12px;min-height:137px}
+  .card-title,.action-card strong{font-size:13px}
+  .metric{font-size:25px}
+  .action-card>.arrow{right:12px;top:14px}
+}
+
 </style>
 </head>
 <body>
@@ -162,7 +324,7 @@ th{color:var(--muted);font-size:11px;white-space:nowrap}
     <div class="welcome">
       <h1>Добрый день!</h1>
       <p>Ваш складской кабинет Q-log</p>
-      <span class="welcome-tag">Все операции — в одном месте</span>
+      <span class="welcome-tag">Ваш склад. Под вашим контролем.</span>
     </div>
 
     <div class="grid">
@@ -183,7 +345,7 @@ th{color:var(--muted);font-size:11px;white-space:nowrap}
     <div class="action-grid">
       <button class="card action-card" onclick="openSection('pickup')"><div class="action-icon">⇢</div><div><strong>Забор товара</strong><span>Новая заявка</span></div><span class="arrow">›</span></button>
       <button class="card action-card" onclick="openSection('returns')"><div class="action-icon">↶</div><div><strong>Возвраты</strong><span>Оформить заявку</span></div><span class="arrow">›</span></button>
-      <button class="card action-card" onclick="openSection('tasks')"><div class="action-icon">✓</div><div><strong>Задание Q-log</strong><span>Новое поручение</span></div><span class="arrow">›</span></button>
+      <button class="card action-card" onclick="openSection('tasks')"><div class="action-icon">✓</div><div><strong>Задания Q-log</strong><span>Новое поручение</span></div><span class="arrow">›</span></button>
     </div>
 
     <div class="help">
@@ -249,7 +411,7 @@ const sectionInfo = {
   finance:["Финансы","Здесь будут отображаться счета, складские услуги, логистика и статусы оплаты.","▤"],
   pickup:["Забор товара от поставщика","Здесь появится форма создания заявки на забор товара.","⇢"],
   returns:["Возвраты","Здесь появится форма заявки на забор возвратов.","↶"],
-  tasks:["Задание Q-log","Здесь можно будет создавать поручения складу.","✓"],
+  tasks:["Задания Q-log","Здесь можно будет создавать поручения складу.","✓"],
   contacts:["Контакты Q-log","Здесь будут указаны телефон и способы связи с командой Q-log.","☎"],
   events:["Последние события","Здесь будет отображаться история ваших заявок, отгрузок и финансовых операций.","◷"]
 };
