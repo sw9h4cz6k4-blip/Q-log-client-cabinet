@@ -1,305 +1,767 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#142b45">
+<meta name="theme-color" content="#102b4d">
 <title>Q-log — личный кабинет</title>
+
 <style>
 :root{
-  --navy:#142b45;--navy2:#0e2340;--blue:#2764d8;--blue2:#174eae;
-  --pale:#eaf2ff;--bg:#f2f6fc;--text:#192d45;--muted:#71839b;
-  --line:#e4ebf4;--white:#fff;--green:#16865b;--orange:#d98219;
-  --shadow:0 8px 24px rgba(25,65,120,.08);
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-button,input{font:inherit}
-button{cursor:pointer}
-.topbar{
-  background:linear-gradient(115deg,var(--navy2),#1c4c83);
-  color:#fff;padding:17px max(20px,calc((100% - 1120px)/2));
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-}
-.brand{display:flex;align-items:center;gap:11px;font-size:25px;font-weight:800;letter-spacing:.2px}
-.brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#55a5ff,#1260d1);display:grid;place-items:center;font-size:21px;box-shadow:inset 0 1px 5px #ffffff55}
-.brand-sub{display:block;font-size:12px;font-weight:400;color:#c6d8ee;margin-top:3px;letter-spacing:0}
-.top-actions{display:flex;align-items:center;gap:12px;color:#dceaff;font-size:13px}
-.online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#26d58a;margin-right:6px}
-.icon-btn{border:1px solid #ffffff30;background:#ffffff12;color:#fff;border-radius:12px;padding:9px 12px}
-main{max-width:1120px;margin:25px auto 105px;padding:0 18px}
-.welcome{
-  position:relative;overflow:hidden;border-radius:22px;padding:27px 30px;margin-bottom:20px;
-  color:#fff;background:linear-gradient(110deg,#123a69 0%,#1e65b9 65%,#8bbcf3 100%);
-  box-shadow:var(--shadow);min-height:145px;
-}
-.welcome:after{content:"";position:absolute;width:280px;height:280px;border:38px solid #ffffff13;border-radius:50%;right:-45px;top:-100px}
-.welcome h1{font-size:28px;margin:0 0 7px;position:relative;z-index:1}
-.welcome p{margin:0;color:#d9e9ff;font-size:14px;position:relative;z-index:1}
-.welcome-tag{display:inline-flex;margin-top:17px;padding:7px 11px;border-radius:20px;background:#ffffff1c;color:#eaf4ff;font-size:12px;position:relative;z-index:1}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.card{
-  background:var(--white);border:1px solid var(--line);border-radius:20px;padding:19px;
-  box-shadow:var(--shadow);min-width:0;
-}
-.metric-card{min-height:154px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-.metric-card:after{content:"";position:absolute;width:130px;height:130px;border-radius:50%;background:#eaf2ff;right:-54px;top:-56px}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;position:relative;z-index:1}
-.card-icon{width:43px;height:43px;border-radius:14px;background:#eaf2ff;color:var(--blue);display:grid;place-items:center;font-size:22px}
-.card-title{font-size:16px;font-weight:700;margin-top:13px}
-.metric{font-size:32px;font-weight:800;color:var(--navy);margin-top:5px}
-.card-sub{font-size:13px;color:var(--muted);margin-top:3px}
-.arrow{font-size:24px;color:var(--blue);font-weight:700}
-.action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
-.action-card{display:flex;align-items:center;gap:14px;min-height:105px;text-align:left;color:var(--text);transition:.15s;border:1px solid var(--line)}
-.action-card:hover{transform:translateY(-2px);border-color:#b8d0f3}
-.action-icon{width:48px;height:48px;flex:0 0 48px;border-radius:15px;background:#eaf2ff;color:var(--blue);display:grid;place-items:center;font-size:23px}
-.action-card strong{display:block;font-size:15px;margin-bottom:6px}
-.action-card span{font-size:13px;color:var(--muted)}
-.help{
-  margin-top:17px;border-radius:20px;padding:19px 22px;color:white;
-  background:linear-gradient(110deg,#123b6c,#1765bd);display:flex;align-items:center;justify-content:space-between;gap:15px;
-}
-.help strong{font-size:17px}.help p{margin:5px 0 0;color:#d5e7ff;font-size:13px}
-.help button{background:#fff;color:var(--navy);border:0;border-radius:12px;padding:11px 16px;font-weight:700;white-space:nowrap}
-.events{margin-top:17px;padding:0;overflow:hidden}
-.events-head{display:flex;align-items:center;justify-content:space-between;padding:19px 21px;border-bottom:1px solid var(--line)}
-.events-head h2{font-size:18px;margin:0}
-.events-head a{color:var(--blue);font-size:13px;text-decoration:none}
-.event{display:flex;align-items:center;gap:13px;padding:15px 21px;border-bottom:1px solid #edf1f6}
-.event:last-child{border-bottom:0}
-.event-icon{width:40px;height:40px;border-radius:13px;background:#eaf2ff;display:grid;place-items:center;color:var(--blue);font-size:19px;flex:0 0 40px}
-.event-main{flex:1;min-width:0}
-.event-main strong{font-size:14px;display:block}
-.event-main span{font-size:12px;color:var(--muted);display:block;margin-top:5px}
-.event-time{font-size:12px;color:var(--muted);white-space:nowrap}
-.success{color:var(--green)!important}.pending{color:var(--orange)!important}
-.login-wrap{max-width:430px;margin:55px auto}
-.login-wrap .card{padding:26px}
-.login-wrap h1{font-size:23px;margin:0 0 8px}
-.muted{color:var(--muted);font-size:13px;line-height:1.5}
-input{width:100%;padding:13px 14px;border:1px solid #dce5f0;border-radius:11px;margin-top:12px;font-size:15px;outline:none}
-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2764d81a}
-.primary{background:var(--blue);color:white;border:0;border-radius:11px;padding:13px 18px;font-weight:700}
-.primary:hover{background:var(--blue2)}
-.login-wrap .primary{width:100%;margin-top:14px}
-.status{font-size:13px;margin-top:12px;min-height:18px}
-.error{color:#c0392b}.ok{color:var(--green)}
-.hidden{display:none!important}
-.section-view{margin-top:20px}
-.section-view .card{padding:24px}
-.section-view h2{margin:0 0 8px}
-.section-view .back{margin-top:18px;background:#eaf2ff;color:var(--blue);border:0;border-radius:10px;padding:11px 15px;font-weight:700}
-.stock-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
-.stock-toolbar input{max-width:360px;margin:0}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;margin-top:14px;min-width:570px}
-th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #edf1f6;font-size:13px}
-th{color:var(--muted);font-size:11px;white-space:nowrap}
-.right{text-align:right}
-.qty{font-weight:700}
-.note{font-size:11px;color:#94a1b2;margin-top:15px}
-.bottom-nav{
-  position:fixed;z-index:10;bottom:12px;left:50%;transform:translateX(-50%);
-  width:min(680px,calc(100% - 24px));background:linear-gradient(110deg,#102944,#173e68);
-  border:1px solid #ffffff22;border-radius:22px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);
-  box-shadow:0 12px 35px #10294435;
-}
-.nav-item{background:transparent;border:0;border-radius:16px;color:#c5d4e7;padding:8px 4px;font-size:11px}
-.nav-item b{display:block;font-size:19px;margin-bottom:4px}
-.nav-item.active{background:#2764d8;color:#fff}
-@media(max-width:760px){
-  main{margin:16px auto 100px;padding:0 12px}
-  .topbar{padding:14px 16px}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .action-grid{grid-template-columns:1fr;gap:10px;margin-top:10px}
-  .card{padding:15px;border-radius:17px}
-  .metric-card{min-height:143px}
-  .metric{font-size:29px}
-  .welcome{padding:22px 20px;min-height:128px;border-radius:18px}
-  .welcome h1{font-size:24px}
-  .help{padding:17px;border-radius:17px}
-  .events-head{padding:16px}
-  .event{padding:13px 15px}
-  .event-time{display:none}
-}
-@media(max-width:390px){
-  .brand{font-size:22px}.top-actions{font-size:11px;gap:7px}
-  .grid{gap:8px}.metric-card{padding:13px;min-height:138px}
-  .card-title{font-size:14px}.metric{font-size:26px}
-  .action-card{min-height:88px}
-}
-
-/* Q-log visual refresh: unified client dashboard */
-:root{
-  --navy:#102b4d;--navy2:#0b1f3a;--blue:#2468d8;--blue2:#1855bd;
-  --pale:#eaf2ff;--bg:#f3f6fb;--text:#172d49;--muted:#71839a;
-  --line:#e5ebf3;--white:#fff;--green:#16865b;--orange:#d98219;
+  --navy:#102b4d;
+  --navy2:#0b1f3a;
+  --blue:#2468d8;
+  --blue2:#1855bd;
+  --pale:#eaf2ff;
+  --bg:#f3f6fb;
+  --text:#172d49;
+  --muted:#71839a;
+  --line:#e5ebf3;
+  --white:#fff;
+  --green:#16865b;
+  --orange:#d98219;
   --shadow:0 10px 30px rgba(20,49,86,.075);
 }
+
+*{box-sizing:border-box}
+
 body{
-  background:
-    radial-gradient(ellipse at 10% 0%,rgba(57,119,210,.08),transparent 34%),
-    #f3f6fb;
+  margin:0;
+  background:radial-gradient(ellipse at 10% 0%,rgba(57,119,210,.08),transparent 34%),#f3f6fb;
   color:var(--text);
   font-family:Inter,Arial,Helvetica,sans-serif;
   letter-spacing:-.01em;
 }
+
+button,input{font:inherit}
+button{cursor:pointer}
+
 .topbar{
   min-height:78px;
   padding:15px max(22px,calc((100% - 1160px)/2));
-  background:linear-gradient(112deg,#0b1f3a 0%,#123c6c 58%,#1d5aa0 100%);
+  background:linear-gradient(112deg,#0b1f3a,#123c6c 58%,#1d5aa0);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
   box-shadow:0 5px 22px rgba(8,31,59,.14);
 }
-.brand{gap:12px;font-size:24px;letter-spacing:-.035em}
-.brand-mark{
-  width:42px;height:42px;border-radius:14px;
-  background:linear-gradient(145deg,#70b6ff,#2468d8);
-  box-shadow:0 5px 15px #061c3a55,inset 0 1px 4px #ffffff70;
-  font-size:0;position:relative;
-}
-.brand-mark:before{
-  content:"Q";font-size:23px;font-weight:800;color:#fff;
-}
-.brand-sub{font-size:11px;letter-spacing:.02em;color:#c5d8f0}
-.top-actions{gap:14px;font-size:12px}
-.icon-btn{width:39px;height:39px;padding:0;border-radius:13px;font-size:17px}
-main{max-width:1160px;margin:27px auto 112px;padding:0 22px}
-.welcome{
-  min-height:166px;padding:30px 34px;margin-bottom:22px;border-radius:24px;
-  background:linear-gradient(112deg,#102f56 0%,#1c5aa2 68%,#4e91d8 100%);
-  box-shadow:0 14px 34px rgba(24,76,137,.16);
-}
-.welcome:after{
-  width:310px;height:310px;border-width:42px;right:-35px;top:-112px;
-  box-shadow:0 0 0 34px #ffffff08,0 0 0 70px #ffffff05;
-}
-.welcome h1{font-size:30px;font-weight:750;letter-spacing:-.035em;margin-bottom:9px}
-.welcome p{font-size:14px;color:#e0edff}
-.welcome-tag{
-  margin-top:19px;padding:8px 13px;border:1px solid #ffffff25;
-  background:#ffffff17;font-size:11px;letter-spacing:.02em
-}
-.grid,.action-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
-.action-grid{margin-top:17px}
-.card{
-  border:1px solid rgba(222,231,243,.95);border-radius:21px;
-  box-shadow:var(--shadow);background:#fff;
-}
-.metric-card{
-  min-height:166px;padding:20px 21px;
-  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
-}
-.metric-card:after{width:145px;height:145px;background:linear-gradient(145deg,#eff5ff,#e5efff);right:-60px;top:-62px}
-.metric-card:hover,.action-card:hover{
-  transform:translateY(-3px);border-color:#c5d8f4;
-  box-shadow:0 15px 32px rgba(24,76,137,.12)
-}
-.card-top{align-items:center}
-.card-icon,.action-icon,.event-icon{
-  width:48px;height:48px;border-radius:15px;
-  background:linear-gradient(145deg,#edf4ff,#e2edff);
-  color:#2869cf;display:grid;place-items:center;font-size:0;
-  box-shadow:inset 0 0 0 1px #dce9fb;
-}
-.card-icon:before,.action-icon:before,.event-icon:before{
-  font-size:22px;font-weight:700;line-height:1
-}
-.metric-card:nth-child(1) .card-icon:before{content:"▦"}
-.metric-card:nth-child(2) .card-icon:before{content:"⇧"}
-.metric-card:nth-child(3) .card-icon:before{content:"₽"}
-.card-title{font-size:16px;font-weight:750;letter-spacing:-.02em;margin-top:15px}
-.metric{font-size:31px;letter-spacing:-.04em;color:#173b68;margin-top:7px}
-.card-sub{font-size:12px;color:#8291a6;margin-top:4px}
-.arrow{font-size:24px;color:#6b94ce;font-weight:500}
-.action-card{
-  min-height:166px;padding:20px 21px;display:flex;flex-direction:column;
-  align-items:flex-start;justify-content:space-between;gap:12px;
-  position:relative;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
-}
-.action-icon{width:48px;height:48px;flex:0 0 48px}
-.action-card:nth-child(1) .action-icon:before{content:"↗"}
-.action-card:nth-child(2) .action-icon:before{content:"↶"}
-.action-card:nth-child(3) .action-icon:before{content:"✓"}
-.action-card strong{display:block;font-size:16px;font-weight:750;margin-bottom:5px;letter-spacing:-.02em}
-.action-card span{font-size:12px;color:var(--muted)}
-.action-card>.arrow{position:absolute;right:19px;top:20px}
-.help{
-  margin-top:19px;border-radius:21px;padding:20px 24px;
-  background:linear-gradient(110deg,#12345e,#1d5da8);
-  box-shadow:0 10px 26px rgba(17,63,115,.14)
-}
-.help strong{font-size:16px}.help p{font-size:12px;color:#d9e8fb}
-.help button{border-radius:12px;padding:12px 17px;box-shadow:0 3px 9px #09284c20}
-.events{margin-top:19px;border-radius:21px}
-.events-head{padding:20px 23px}
-.events-head h2{font-size:17px;letter-spacing:-.02em}
-.events-head a{font-weight:650}
-.event{padding:16px 23px}
-.event-icon{width:42px;height:42px;flex:0 0 42px;border-radius:14px}
-.event-icon:before{content:"↗"}
-.event:nth-child(3) .event-icon:before{content:"₽"}
-.event-main strong{font-size:13px}
-.event-main span{font-size:12px}
-.login-wrap{max-width:440px;margin:66px auto}
-.login-wrap .card{padding:30px;border-radius:23px}
-.login-wrap h1{font-size:24px;letter-spacing:-.03em}
-input{border-color:#dfe7f1;border-radius:13px;padding:14px 15px}
-.primary{border-radius:13px;background:linear-gradient(110deg,#276cdb,#1b56bb);box-shadow:0 5px 13px #2468d82b}
-.primary:hover{background:linear-gradient(110deg,#205fc9,#164ca9)}
-.section-view{margin-top:22px}
-.section-view .card{padding:26px;border-radius:22px}
-.section-view h2{font-size:22px;letter-spacing:-.03em}
-.section-view .back{border-radius:12px}
-.stock-toolbar input{border-radius:12px}
-table{border-collapse:separate;border-spacing:0}
-th{background:#f6f8fc;padding-top:14px;padding-bottom:14px}
-td{padding-top:14px;padding-bottom:14px}
-.bottom-nav{
-  bottom:16px;width:min(700px,calc(100% - 28px));padding:8px;
-  border-radius:21px;background:linear-gradient(110deg,#0c2340,#173f6c);
-  box-shadow:0 14px 38px rgba(9,34,64,.25)
-}
-.nav-item{border-radius:15px;padding:9px 5px;font-size:11px;transition:background .15s ease}
-.nav-item b{font-size:18px;margin-bottom:5px}
-.nav-item.active{background:linear-gradient(120deg,#347ce5,#2462c8);box-shadow:0 3px 10px #061c3b45}
-button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aaf0;outline-offset:3px}
-@media(max-width:760px){
-  main{margin:16px auto 105px;padding:0 13px}
-  .topbar{padding:13px 15px;min-height:68px}
-  .grid,.action-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
-  .action-grid{margin-top:11px}
-  .metric-card,.action-card{min-height:145px;padding:15px;border-radius:18px}
-  .card-icon,.action-icon{width:43px;height:43px;border-radius:13px}
-  .card-title,.action-card strong{font-size:14px}
-  .metric{font-size:27px}
-  .welcome{padding:23px 21px;min-height:139px;border-radius:19px;margin-bottom:13px}
-  .welcome h1{font-size:25px}
-  .welcome-tag{margin-top:14px}
-  .help{padding:17px;border-radius:18px}
-  .events-head{padding:16px}
-  .event{padding:13px 15px}
-  .bottom-nav{bottom:9px}
-}
-@media(max-width:390px){
-  .brand{font-size:21px}.brand-mark{width:38px;height:38px}
-  .top-actions{font-size:10px;gap:6px}
-  .grid,.action-grid{gap:8px}
-  .metric-card,.action-card{padding:12px;min-height:137px}
-  .card-title,.action-card strong{font-size:13px}
-  .metric{font-size:25px}
-  .action-card>.arrow{right:12px;top:14px}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:-.035em;
 }
 
+.brand-mark{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:linear-gradient(145deg,#70b6ff,#2468d8);
+  box-shadow:0 5px 15px #061c3a55;
+  display:grid;
+  place-items:center;
+  font-size:23px;
+  font-weight:800;
+}
+
+.brand-sub{
+  display:block;
+  font-size:11px;
+  font-weight:400;
+  color:#c5d8f0;
+  margin-top:3px;
+}
+
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:12px;
+  color:#dceaff;
+}
+
+.online-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#26d58a;
+  margin-right:6px;
+}
+
+.icon-btn{
+  width:39px;
+  height:39px;
+  border:1px solid #ffffff30;
+  background:#ffffff12;
+  color:white;
+  border-radius:13px;
+}
+
+main{
+  max-width:1160px;
+  margin:27px auto 112px;
+  padding:0 22px;
+}
+
+.welcome{
+  position:relative;
+  overflow:hidden;
+  min-height:166px;
+  padding:30px 34px;
+  margin-bottom:22px;
+  border-radius:24px;
+  color:white;
+  background:linear-gradient(112deg,#102f56,#1c5aa2 68%,#4e91d8);
+  box-shadow:0 14px 34px rgba(24,76,137,.16);
+}
+
+.welcome:after{
+  content:"";
+  position:absolute;
+  width:310px;
+  height:310px;
+  border:42px solid #ffffff13;
+  border-radius:50%;
+  right:-35px;
+  top:-112px;
+  box-shadow:0 0 0 34px #ffffff08,0 0 0 70px #ffffff05;
+}
+
+.welcome h1{
+  font-size:30px;
+  font-weight:750;
+  letter-spacing:-.035em;
+  margin:0 0 9px;
+  position:relative;
+  z-index:1;
+}
+
+.welcome p{
+  font-size:14px;
+  color:#e0edff;
+  margin:0;
+  position:relative;
+  z-index:1;
+}
+
+.welcome-tag{
+  display:inline-flex;
+  margin-top:19px;
+  padding:8px 13px;
+  border:1px solid #ffffff25;
+  border-radius:20px;
+  background:#ffffff17;
+  color:#eaf4ff;
+  font-size:11px;
+  position:relative;
+  z-index:1;
+}
+
+/* ГЛАВНАЯ: ТРИ КАРТОЧКИ В РЯД */
+
+.grid,.action-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:17px;
+}
+
+.action-grid{margin-top:17px}
+
+.card{
+  min-width:0;
+  background:white;
+  border:1px solid rgba(222,231,243,.95);
+  border-radius:21px;
+  box-shadow:var(--shadow);
+}
+
+.metric-card{
+  min-height:166px;
+  padding:20px 21px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+  transition:.18s;
+}
+
+.metric-card:after{
+  content:"";
+  position:absolute;
+  width:145px;
+  height:145px;
+  border-radius:50%;
+  background:linear-gradient(145deg,#eff5ff,#e5efff);
+  right:-60px;
+  top:-62px;
+}
+
+.metric-card:hover,.action-card:hover{
+  transform:translateY(-3px);
+  border-color:#c5d8f4;
+  box-shadow:0 15px 32px rgba(24,76,137,.12);
+}
+
+.card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:relative;
+  z-index:1;
+}
+
+.card-icon,.action-icon,.event-icon{
+  width:48px;
+  height:48px;
+  border-radius:15px;
+  background:linear-gradient(145deg,#edf4ff,#e2edff);
+  color:#2869cf;
+  display:grid;
+  place-items:center;
+  font-size:22px;
+  box-shadow:inset 0 0 0 1px #dce9fb;
+  flex-shrink:0;
+}
+
+.arrow{
+  font-size:24px;
+  color:#6b94ce;
+  font-weight:500;
+}
+
+.card-title{
+  font-size:16px;
+  font-weight:750;
+  margin-top:15px;
+  letter-spacing:-.02em;
+}
+
+.metric{
+  font-size:31px;
+  font-weight:800;
+  color:#173b68;
+  margin-top:7px;
+}
+
+.card-sub{
+  font-size:12px;
+  color:#8291a6;
+  margin-top:4px;
+}
+
+.action-card{
+  min-height:166px;
+  padding:20px 21px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  position:relative;
+  text-align:left;
+  color:var(--text);
+  transition:.18s;
+}
+
+.action-card strong{
+  display:block;
+  font-size:16px;
+  font-weight:750;
+  margin-bottom:5px;
+  letter-spacing:-.02em;
+}
+
+.action-card span:not(.arrow){
+  font-size:12px;
+  color:var(--muted);
+}
+
+.action-card>.arrow{
+  position:absolute;
+  right:19px;
+  top:20px;
+}
+
+.help{
+  margin-top:19px;
+  border-radius:21px;
+  padding:20px 24px;
+  color:white;
+  background:linear-gradient(110deg,#12345e,#1d5da8);
+  box-shadow:0 10px 26px rgba(17,63,115,.14);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.help strong{font-size:16px}
+.help p{font-size:12px;color:#d9e8fb;margin:5px 0 0}
+
+.help button{
+  background:white;
+  color:var(--navy);
+  border:0;
+  border-radius:12px;
+  padding:12px 17px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.events{
+  margin-top:19px;
+  overflow:hidden;
+}
+
+.events-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 23px;
+  border-bottom:1px solid var(--line);
+}
+
+.events-head h2{
+  font-size:17px;
+  margin:0;
+}
+
+.events-head a{
+  color:var(--blue);
+  font-size:13px;
+  font-weight:650;
+  text-decoration:none;
+}
+
+.event{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:16px 23px;
+  border-bottom:1px solid #edf1f6;
+}
+
+.event:last-child{border-bottom:0}
+
+.event-icon{
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  border-radius:14px;
+}
+
+.event-main{flex:1;min-width:0}
+.event-main strong{font-size:13px;display:block}
+.event-main span{font-size:12px;color:var(--muted);display:block;margin-top:5px}
+
+/* ВХОД */
+
+.login-wrap{
+  max-width:440px;
+  margin:66px auto;
+}
+
+.login-wrap .card{
+  padding:30px;
+  border-radius:23px;
+}
+
+.login-wrap h1{
+  font-size:24px;
+  margin:0 0 8px;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+
+input{
+  width:100%;
+  padding:14px 15px;
+  border:1px solid #dfe7f1;
+  border-radius:13px;
+  margin-top:12px;
+  font-size:15px;
+  outline:none;
+}
+
+input:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px #2764d81a;
+}
+
+.primary{
+  background:linear-gradient(110deg,#276cdb,#1b56bb);
+  color:white;
+  border:0;
+  border-radius:13px;
+  padding:13px 18px;
+  font-weight:700;
+  box-shadow:0 5px 13px #2468d82b;
+}
+
+.primary:disabled{
+  opacity:.6;
+  cursor:wait;
+}
+
+.login-wrap .primary{
+  width:100%;
+  margin-top:14px;
+}
+
+.status{
+  font-size:13px;
+  margin-top:12px;
+  min-height:18px;
+}
+
+.error{color:#c0392b}
+.ok{color:var(--green)}
+.hidden{display:none!important}
+
+/* РАЗДЕЛЫ */
+
+.section-view{margin-top:22px}
+
+.section-view .card{
+  padding:26px;
+  border-radius:22px;
+}
+
+.section-view h2{
+  font-size:22px;
+  margin:0 0 8px;
+}
+
+.section-view .back{
+  margin-top:18px;
+  background:#eaf2ff;
+  color:var(--blue);
+  border:0;
+  border-radius:12px;
+  padding:11px 15px;
+  font-weight:700;
+}
+
+/* ОСТАТКИ */
+
+.stock-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:18px;
+}
+
+.stock-toolbar input{
+  max-width:360px;
+  margin:0;
+}
+
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  margin-top:14px;
+  table-layout:fixed;
+}
+
+th,td{
+  text-align:left;
+  padding:12px 9px;
+  border-bottom:1px solid #edf1f6;
+  font-size:13px;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+
+th{
+  color:var(--muted);
+  font-size:11px;
+  background:#f6f8fc;
+}
+
+.right{text-align:right}
+.qty{font-weight:700}
+
+/* ИТОГОВАЯ СТРОКА */
+
+tfoot td{
+  background:#eaf2ff;
+  color:#173b68;
+  font-size:13px;
+  font-weight:800;
+  border-top:2px solid #c9dcf8;
+  border-bottom:0;
+  padding-top:13px;
+  padding-bottom:13px;
+}
+
+.note{
+  font-size:11px;
+  color:#94a1b2;
+  margin-top:15px;
+}
+
+/* НИЖНЯЯ НАВИГАЦИЯ */
+
+.bottom-nav{
+  position:fixed;
+  z-index:10;
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(700px,calc(100% - 28px));
+  padding:8px;
+  border-radius:21px;
+  background:linear-gradient(110deg,#0c2340,#173f6c);
+  box-shadow:0 14px 38px rgba(9,34,64,.25);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+}
+
+.nav-item{
+  background:transparent;
+  border:0;
+  border-radius:15px;
+  color:#c5d4e7;
+  padding:9px 5px;
+  font-size:11px;
+}
+
+.nav-item b{
+  display:block;
+  font-size:18px;
+  margin-bottom:5px;
+}
+
+.nav-item.active{
+  background:linear-gradient(120deg,#347ce5,#2462c8);
+  color:white;
+}
+
+/* МОБИЛЬНАЯ ВЕРСИЯ */
+
+@media(max-width:760px){
+
+  main{
+    margin:14px auto 110px;
+    padding:0 10px;
+  }
+
+  .topbar{
+    padding:13px 15px;
+    min-height:68px;
+  }
+
+  .brand{font-size:21px}
+  .brand-mark{width:38px;height:38px}
+
+  .grid,.action-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+
+  .action-grid{margin-top:8px}
+
+  .metric-card,.action-card{
+    min-width:0;
+    min-height:125px;
+    padding:10px 8px;
+    border-radius:15px;
+  }
+
+  .card-icon,.action-icon{
+    width:34px;
+    height:34px;
+    flex:0 0 34px;
+    border-radius:11px;
+  }
+
+  .card-icon:before,.action-icon:before{
+    font-size:18px;
+  }
+
+  .card-title,.action-card strong{
+    font-size:12px;
+    line-height:1.25;
+    margin-top:8px;
+    overflow-wrap:anywhere;
+  }
+
+  .action-card strong{margin-top:0}
+
+  .action-card{
+    justify-content:space-between;
+    gap:6px;
+  }
+
+  .action-card span:not(.arrow){
+    font-size:10px;
+    line-height:1.25;
+  }
+
+  .action-card>.arrow{
+    right:8px;
+    top:9px;
+    font-size:17px;
+  }
+
+  .metric{
+    font-size:22px;
+    margin-top:4px;
+  }
+
+  .card-sub{
+    font-size:10px;
+    line-height:1.2;
+  }
+
+  .welcome{
+    padding:20px 17px;
+    min-height:139px;
+    border-radius:19px;
+    margin-bottom:13px;
+  }
+
+  .welcome h1{font-size:25px}
+  .welcome-tag{margin-top:14px}
+
+  .help{
+    padding:17px;
+    border-radius:18px;
+  }
+
+  .events-head{padding:16px}
+  .event{padding:13px 15px}
+
+  /* КОМПАКТНАЯ ТАБЛИЦА */
+
+  .section-view .card{
+    padding:14px 10px;
+  }
+
+  .section-view h2{font-size:19px}
+
+  .table-wrap{
+    overflow-x:hidden;
+  }
+
+  table{
+    width:100%;
+    min-width:0;
+    table-layout:fixed;
+  }
+
+  th,td{
+    padding:8px 3px;
+    font-size:10px;
+    line-height:1.3;
+    overflow-wrap:anywhere;
+    vertical-align:middle;
+  }
+
+  th{
+    font-size:9px;
+    white-space:normal;
+    padding-top:9px;
+    padding-bottom:9px;
+  }
+
+  th:nth-child(1),td:nth-child(1){width:39%}
+  th:nth-child(2),td:nth-child(2){width:17%}
+  th:nth-child(3),td:nth-child(3){width:15%}
+  th:nth-child(4),td:nth-child(4){width:14%}
+  th:nth-child(5),td:nth-child(5){width:15%}
+
+  .right{text-align:center}
+
+  .qty{
+    font-size:10px;
+    white-space:nowrap;
+  }
+
+  .stock-toolbar{
+    gap:9px;
+  }
+
+  .stock-toolbar input{
+    max-width:100%;
+    font-size:13px;
+  }
+
+  .stock-toolbar button{
+    width:100%;
+  }
+
+  tfoot td{
+    font-size:10px;
+    padding:10px 2px;
+    overflow-wrap:normal;
+  }
+
+  .bottom-nav{
+    width:calc(100% - 16px);
+    bottom:7px;
+  }
+}
+
+@media(max-width:360px){
+
+  .grid,.action-grid{gap:6px}
+
+  .metric-card,.action-card{
+    padding:8px 6px;
+  }
+
+  .card-title,.action-card strong{
+    font-size:11px;
+  }
+
+  .metric{font-size:20px}
+
+  th,td{
+    font-size:9px;
+    padding:7px 2px;
+  }
+}
+
+button:focus-visible,a:focus-visible,input:focus-visible{
+  outline:3px solid #79aaf0;
+  outline-offset:3px;
+}
 </style>
 </head>
+
 <body>
 
 <header class="topbar">
   <div class="brand">
-    <div class="brand-mark">◆</div>
-    <div>Q-log<span class="brand-sub">Личный кабинет клиента</span></div>
+    <div class="brand-mark">Q</div>
+    <div>
+      Q-log
+      <span class="brand-sub">Личный кабинет клиента</span>
+    </div>
   </div>
+
   <div class="top-actions">
     <span><i class="online-dot"></i>Онлайн</span>
     <button class="icon-btn" type="button" aria-label="Уведомления">♧</button>
@@ -307,20 +769,29 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
 </header>
 
 <main>
+
+  <!-- ВХОД -->
+
   <section id="login" class="login-wrap">
     <div class="card">
       <h1>Вход в личный кабинет</h1>
       <p class="muted">Введите логин и пароль для доступа к данным вашего склада.</p>
+
       <form onsubmit="login();return false">
         <input id="username" placeholder="Логин" autocomplete="username" required>
         <input id="password" type="password" placeholder="Пароль" autocomplete="current-password" required>
+
         <button id="loginButton" class="primary" type="submit">Войти</button>
       </form>
+
       <p id="error" class="status error"></p>
     </div>
   </section>
 
+  <!-- ГЛАВНАЯ -->
+
   <section id="dashboard" class="hidden">
+
     <div class="welcome">
       <h1>Добрый день!</h1>
       <p>Ваш складской кабинет Q-log</p>
@@ -328,200 +799,600 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
     </div>
 
     <div class="grid">
+
       <button class="card metric-card" onclick="openSection('stock')">
-        <div class="card-top"><div class="card-icon">▣</div><span class="arrow">›</span></div>
-        <div><div class="card-title">Мои остатки</div><div class="metric" id="count">—</div><div class="card-sub">Позиций товара</div></div>
+        <div class="card-top">
+          <div class="card-icon">▦</div>
+          <span class="arrow">›</span>
+        </div>
+        <div>
+          <div class="card-title">Мои остатки</div>
+          <div class="metric" id="count">—</div>
+          <div class="card-sub">Позиций товара</div>
+        </div>
       </button>
+
       <button class="card metric-card" onclick="openSection('fbo')">
-        <div class="card-top"><div class="card-icon">▰</div><span class="arrow">›</span></div>
-        <div><div class="card-title">Отгрузки FBO</div><div class="metric">—</div><div class="card-sub">История отгрузок</div></div>
+        <div class="card-top">
+          <div class="card-icon">⇧</div>
+          <span class="arrow">›</span>
+        </div>
+        <div>
+          <div class="card-title">Отгрузки FBO</div>
+          <div class="metric">—</div>
+          <div class="card-sub">История отгрузок</div>
+        </div>
       </button>
+
       <button class="card metric-card" onclick="openSection('finance')">
-        <div class="card-top"><div class="card-icon">▤</div><span class="arrow">›</span></div>
-        <div><div class="card-title">Финансы</div><div class="metric" style="font-size:19px">Счета и оплаты</div><div class="card-sub">История финансовых операций</div></div>
+        <div class="card-top">
+          <div class="card-icon">₽</div>
+          <span class="arrow">›</span>
+        </div>
+        <div>
+          <div class="card-title">Финансы</div>
+          <div class="metric" style="font-size:19px">Счета и оплаты</div>
+          <div class="card-sub">История финансовых операций</div>
+        </div>
       </button>
+
     </div>
 
     <div class="action-grid">
-      <button class="card action-card" onclick="openSection('pickup')"><div class="action-icon">⇢</div><div><strong>Забор товара</strong><span>Новая заявка</span></div><span class="arrow">›</span></button>
-      <button class="card action-card" onclick="openSection('returns')"><div class="action-icon">↶</div><div><strong>Возвраты</strong><span>Оформить заявку</span></div><span class="arrow">›</span></button>
-      <button class="card action-card" onclick="openSection('tasks')"><div class="action-icon">✓</div><div><strong>Задания Q-log</strong><span>Новое поручение</span></div><span class="arrow">›</span></button>
+
+      <button class="card action-card" onclick="openSection('pickup')">
+        <div class="action-icon">↗</div>
+        <div>
+          <strong>Забор товара</strong>
+          <span>Новая заявка</span>
+        </div>
+        <span class="arrow">›</span>
+      </button>
+
+      <button class="card action-card" onclick="openSection('returns')">
+        <div class="action-icon">↶</div>
+        <div>
+          <strong>Возвраты</strong>
+          <span>Оформить заявку</span>
+        </div>
+        <span class="arrow">›</span>
+      </button>
+
+      <button class="card action-card" onclick="openSection('tasks')">
+        <div class="action-icon">✓</div>
+        <div>
+          <strong>Задания Q-log</strong>
+          <span>Новое поручение</span>
+        </div>
+        <span class="arrow">›</span>
+      </button>
+
     </div>
 
     <div class="help">
-      <div><strong>Нужна помощь?</strong><p>Свяжитесь с командой Q-log</p></div>
+      <div>
+        <strong>Нужна помощь?</strong>
+        <p>Свяжитесь с командой Q-log</p>
+      </div>
       <button type="button" onclick="openSection('contacts')">Контакты&nbsp; ›</button>
     </div>
 
     <div class="card events">
-      <div class="events-head"><h2>Последние события</h2><a href="#" onclick="openSection('events');return false">Все события&nbsp; ›</a></div>
-      <div class="event"><div class="event-icon">▰</div><div class="event-main"><strong>Отгрузки FBO</strong><span>Здесь будут отображаться ваши последние отгрузки</span></div></div>
-      <div class="event"><div class="event-icon">▤</div><div class="event-main"><strong>Счета и оплаты</strong><span>Здесь будут отображаться финансовые события</span></div></div>
+      <div class="events-head">
+        <h2>Последние события</h2>
+        <a href="#" onclick="openSection('events');return false">Все события&nbsp; ›</a>
+      </div>
+
+      <div class="event">
+        <div class="event-icon">↗</div>
+        <div class="event-main">
+          <strong>Отгрузки FBO</strong>
+          <span>Здесь будут отображаться ваши последние отгрузки</span>
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="event-icon">₽</div>
+        <div class="event-main">
+          <strong>Счета и оплаты</strong>
+          <span>Здесь будут отображаться финансовые события</span>
+        </div>
+      </div>
     </div>
+
   </section>
+
+  <!-- ОСТАТКИ -->
 
   <section id="stockSection" class="section-view hidden">
     <div class="card">
+
       <h2>Мои остатки</h2>
       <p class="muted">Текущие данные по выделенному складу.</p>
       <p class="muted">Склад: <b id="warehouse">Ваш склад</b></p>
+
       <div class="stock-toolbar">
-        <input id="search" placeholder="Поиск по названию или артикулу" oninput="showProducts()">
-        <button id="refreshButton" class="primary" onclick="loadProducts()">Обновить остатки</button>
+        <input
+          id="search"
+          placeholder="Поиск по названию или артикулу"
+          oninput="showProducts()"
+        >
+        <button id="refreshButton" class="primary" onclick="loadProducts()">
+          Обновить остатки
+        </button>
       </div>
+
       <p id="status" class="status muted">Данные загружаются при входе.</p>
+
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Товар</th><th>Артикул</th><th class="right">Остаток</th><th class="right">Резерв</th><th class="right">В пути</th></tr></thead>
-          <tbody id="products"><tr><td colspan="5">Откройте раздел после входа.</td></tr></tbody>
+
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th>Артикул</th>
+              <th class="right">Остаток</th>
+              <th class="right">Резерв</th>
+              <th class="right">В пути</th>
+            </tr>
+          </thead>
+
+          <tbody id="products">
+            <tr>
+              <td colspan="5">Откройте раздел после входа.</td>
+            </tr>
+          </tbody>
+
+          <tfoot id="stockTotals">
+            <tr>
+              <td colspan="5">ИТОГО: —</td>
+            </tr>
+          </tfoot>
+
         </table>
       </div>
+
       <p class="note" id="updated"></p>
+
       <button class="back" onclick="showDashboard()">← На главную</button>
+
     </div>
   </section>
+
+  <!-- ОСТАЛЬНЫЕ РАЗДЕЛЫ -->
 
   <section id="placeholderSection" class="section-view hidden">
     <div class="card">
+
       <div class="card-icon" id="placeholderIcon">◈</div>
+
       <h2 id="placeholderTitle">Раздел Q-log</h2>
-      <p class="muted" id="placeholderText">Этот раздел будет подключён на следующем этапе разработки.</p>
+
+      <p class="muted" id="placeholderText">
+        Этот раздел будет подключён на следующем этапе разработки.
+      </p>
+
       <button class="back" onclick="showDashboard()">← На главную</button>
+
     </div>
   </section>
+
 </main>
 
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
+
 <nav id="bottomNav" class="bottom-nav hidden" aria-label="Основная навигация">
-  <button class="nav-item active" onclick="showDashboard()"><b>⌂</b>Главная</button>
-  <button class="nav-item" onclick="openSection('events')"><b>▥</b>События</button>
-  <button class="nav-item" onclick="openSection('tasks')"><b>☷</b>Заявки</button>
-  <button class="nav-item" onclick="logout()"><b>○</b>Выйти</button>
+
+  <button class="nav-item active" onclick="showDashboard()">
+    <b>⌂</b>Главная
+  </button>
+
+  <button class="nav-item" onclick="openSection('events')">
+    <b>▥</b>События
+  </button>
+
+  <button class="nav-item" onclick="openSection('tasks')">
+    <b>☷</b>Заявки
+  </button>
+
+  <button class="nav-item" onclick="logout()">
+    <b>○</b>Выйти
+  </button>
+
 </nav>
 
 <script>
-// Вставьте сюда действующий адрес Q-log FastAPI-сервера.
-// Это адрес нашего сервера, а не токен МойСклад и не адрес Telegram-бота.
+
+// АДРЕС СЕРВЕРА Q-LOG
+
 const API_URL = "https://q-log-server.onrender.com";
 
 let authHeader = "";
 let items = [];
 
+// ОПИСАНИЕ РАЗДЕЛОВ
+
 const sectionInfo = {
-  fbo:["Отгрузки FBO","История отгрузок с маркетплейсов появится здесь после подключения журнала операций.","▰"],
-  finance:["Финансы","Здесь будут отображаться счета, складские услуги, логистика и статусы оплаты.","▤"],
-  pickup:["Забор товара от поставщика","Здесь появится форма создания заявки на забор товара.","⇢"],
-  returns:["Возвраты","Здесь появится форма заявки на забор возвратов.","↶"],
-  tasks:["Задания Q-log","Здесь можно будет создавать поручения складу.","✓"],
-  contacts:["Контакты Q-log","Здесь будут указаны телефон и способы связи с командой Q-log.","☎"],
-  events:["Последние события","Здесь будет отображаться история ваших заявок, отгрузок и финансовых операций.","◷"]
+
+  fbo:[
+    "Отгрузки FBO",
+    "История отгрузок с маркетплейсов появится здесь после подключения журнала операций.",
+    "⇧"
+  ],
+
+  finance:[
+    "Финансы",
+    "Здесь будут отображаться счета, складские услуги, логистика и статусы оплаты.",
+    "₽"
+  ],
+
+  pickup:[
+    "Забор товара от поставщика",
+    "Здесь появится форма создания заявки на забор товара.",
+    "↗"
+  ],
+
+  returns:[
+    "Возвраты",
+    "Здесь появится форма заявки на забор возвратов.",
+    "↶"
+  ],
+
+  tasks:[
+    "Задания Q-log",
+    "Здесь можно будет создавать поручения складу.",
+    "✓"
+  ],
+
+  contacts:[
+    "Контакты Q-log",
+    "Здесь будут указаны телефон и способы связи с командой Q-log.",
+    "☎"
+  ],
+
+  events:[
+    "Последние события",
+    "Здесь будет отображаться история ваших заявок, отгрузок и финансовых операций.",
+    "◷"
+  ]
+
 };
 
+
+// ГЛАВНАЯ
+
 function showDashboard(){
+
   document.getElementById("dashboard").classList.remove("hidden");
+
   document.getElementById("stockSection").classList.add("hidden");
+
   document.getElementById("placeholderSection").classList.add("hidden");
+
   setActiveNav(0);
+
+  window.scrollTo({top:0,behavior:"smooth"});
+
 }
+
+
+// ОТКРЫТИЕ РАЗДЕЛОВ
+
 function openSection(name){
+
   if(name==="stock"){
+
     document.getElementById("dashboard").classList.add("hidden");
+
     document.getElementById("placeholderSection").classList.add("hidden");
+
     document.getElementById("stockSection").classList.remove("hidden");
+
     loadProducts();
+
     setActiveNav(-1);
+
     window.scrollTo({top:0,behavior:"smooth"});
+
     return;
   }
+
   const info=sectionInfo[name]||sectionInfo.events;
+
   document.getElementById("dashboard").classList.add("hidden");
+
   document.getElementById("stockSection").classList.add("hidden");
+
   document.getElementById("placeholderSection").classList.remove("hidden");
+
   document.getElementById("placeholderTitle").textContent=info[0];
+
   document.getElementById("placeholderText").textContent=info[1];
+
   document.getElementById("placeholderIcon").textContent=info[2];
+
   setActiveNav(name==="tasks"?2:name==="events"?1:-1);
+
   window.scrollTo({top:0,behavior:"smooth"});
+
 }
+
+
+// АКТИВНАЯ КНОПКА НАВИГАЦИИ
+
 function setActiveNav(index){
-  document.querySelectorAll(".nav-item").forEach((el,i)=>el.classList.toggle("active",i===index));
+
+  document.querySelectorAll(".nav-item").forEach((el,i)=>{
+
+    el.classList.toggle("active",i===index);
+
+  });
+
 }
+
+
+// СТАТУС ЗАГРУЗКИ
+
 function setStatus(message,type="muted"){
+
   const el=document.getElementById("status");
+
   el.textContent=message;
+
   el.className="status "+type;
+
 }
+
+
+// АВТОРИЗАЦИЯ
+
 async function login(){
+
   const username=document.getElementById("username").value.trim();
+
   const password=document.getElementById("password").value;
+
   const error=document.getElementById("error");
+
   const button=document.getElementById("loginButton");
+
   error.textContent="";
+
   button.disabled=true;
+
   button.textContent="Проверка...";
+
   authHeader="Basic "+btoa(unescape(encodeURIComponent(username+":"+password)));
+
   try{
+
     await loadProducts(true);
+
     document.getElementById("login").classList.add("hidden");
+
     document.getElementById("dashboard").classList.remove("hidden");
+
     document.getElementById("bottomNav").classList.remove("hidden");
+
   }catch(e){
+
     authHeader="";
+
     error.textContent=e.message;
+
   }finally{
+
     button.disabled=false;
+
     button.textContent="Войти";
+
   }
+
 }
+
+
+// ЗАГРУЗКА ОСТАТКОВ С СЕРВЕРА
+
 async function loadProducts(checkLogin=false){
+
   const button=document.getElementById("refreshButton");
+
   if(button)button.disabled=true;
+
   if(!checkLogin)setStatus("Обновляем остатки...");
+
   try{
-    const response=await fetch(API_URL+"/api/stock",{method:"GET",headers:{"Authorization":authHeader}});
-    if(response.status===401)throw new Error("Неверный логин или пароль");
-    if(!response.ok)throw new Error("Ошибка сервера: "+response.status);
+
+    const response=await fetch(API_URL+"/api/stock",{
+
+      method:"GET",
+
+      headers:{
+        "Authorization":authHeader
+      }
+
+    });
+
+    if(response.status===401){
+
+      throw new Error("Неверный логин или пароль");
+
+    }
+
+    if(!response.ok){
+
+      throw new Error("Ошибка сервера: "+response.status);
+
+    }
+
     const data=await response.json();
+
     items=data.items||[];
+
     document.getElementById("warehouse").textContent=data.warehouse||"Ваш склад";
+
     document.getElementById("count").textContent=items.length;
+
     showProducts();
+
     setStatus("Данные успешно загружены","ok");
-    document.getElementById("updated").textContent="Последнее обновление: "+new Date().toLocaleString("ru-RU");
+
+    document.getElementById("updated").textContent=
+      "Последнее обновление: "+new Date().toLocaleString("ru-RU");
+
   }catch(e){
+
     if(checkLogin)throw e;
+
     setStatus("Не удалось загрузить данные: "+e.message,"error");
+
   }finally{
+
     if(button)button.disabled=false;
+
   }
+
 }
+
+
+// ЗАЩИТА ОТ HTML-ВСТАВОК
+
 function escapeHtml(value){
-  return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+  return String(value??"").replace(/[&<>"']/g,c=>({
+
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+
+  }[c]));
+
 }
+
+
+// ОТОБРАЖЕНИЕ ТОВАРОВ И ОБЩИХ ОСТАТКОВ
+
 function showProducts(){
+
   const q=document.getElementById("search").value.toLowerCase().trim();
-  const filtered=items.filter(x=>((x.product||"")+" "+(x.article||"")).toLowerCase().includes(q));
-  document.getElementById("products").innerHTML=filtered.map(x=>`
+
+  const filtered=items.filter(x=>
+
+    ((x.product||"")+" "+(x.article||""))
+
+    .toLowerCase()
+
+    .includes(q)
+
+  );
+
+  const tbody=document.getElementById("products");
+
+  tbody.innerHTML=filtered.map(x=>`
+
     <tr>
-      <td>${escapeHtml(x.product)}</td><td>${escapeHtml(x.article)}</td>
+
+      <td>${escapeHtml(x.product)}</td>
+
+      <td>${escapeHtml(x.article)}</td>
+
       <td class="right qty">${Number(x.stock||0)} шт.</td>
+
       <td class="right">${Number(x.reserve||0)} шт.</td>
+
       <td class="right">${Number(x.inTransit||0)} шт.</td>
-    </tr>`).join("");
-  if(filtered.length===0)document.getElementById("products").innerHTML='<tr><td colspan="5">Товары не найдены</td></tr>';
+
+    </tr>
+
+  `).join("");
+
+  if(filtered.length===0){
+
+    tbody.innerHTML=
+      '<tr><td colspan="5">Товары не найдены</td></tr>';
+
+  }
+
+
+  // ОБЩИЕ СУММЫ ПО ВСЕМ ТОВАРАМ СКЛАДА
+
+  // Поиск не влияет на итоговые показатели.
+
+  const totalStock=items.reduce(
+
+    (sum,x)=>sum+Number(x.stock||0),0
+
+  );
+
+  const totalReserve=items.reduce(
+
+    (sum,x)=>sum+Number(x.reserve||0),0
+
+  );
+
+  const totalTransit=items.reduce(
+
+    (sum,x)=>sum+Number(x.inTransit||0),0
+
+  );
+
+
+  document.getElementById("stockTotals").innerHTML=`
+
+    <tr>
+
+      <td colspan="2"><b>ИТОГО</b></td>
+
+      <td class="right">${totalStock}</td>
+
+      <td class="right">${totalReserve}</td>
+
+      <td class="right">${totalTransit}</td>
+
+    </tr>
+
+  `;
+
 }
+
+
+// ВЫХОД ИЗ КАБИНЕТА
+
 function logout(){
-  authHeader="";items=[];
+
+  authHeader="";
+
+  items=[];
+
   document.getElementById("dashboard").classList.add("hidden");
+
   document.getElementById("stockSection").classList.add("hidden");
+
   document.getElementById("placeholderSection").classList.add("hidden");
+
   document.getElementById("bottomNav").classList.add("hidden");
+
   document.getElementById("login").classList.remove("hidden");
+
   document.getElementById("password").value="";
+
   document.getElementById("search").value="";
+
   document.getElementById("error").textContent="";
-  document.getElementById("products").innerHTML='<tr><td colspan="5">Откройте раздел после входа.</td></tr>';
+
+  document.getElementById("products").innerHTML=
+    '<tr><td colspan="5">Откройте раздел после входа.</td></tr>';
+
+  document.getElementById("stockTotals").innerHTML=
+    '<tr><td colspan="5">ИТОГО: —</td></tr>';
+
   window.scrollTo({top:0,behavior:"smooth"});
+
 }
+
 </script>
+
 </body>
 </html>
