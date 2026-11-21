@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#102b4d">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <title>Q-log — личный кабинет</title>
 
 <style>
@@ -25,7 +26,6 @@
 }
 
 *{box-sizing:border-box}
-
 body{
   margin:0;
   background:radial-gradient(ellipse at 10% 0%,rgba(57,119,210,.08),transparent 34%),#f3f6fb;
@@ -33,7 +33,6 @@ body{
   font-family:Inter,Arial,Helvetica,sans-serif;
   letter-spacing:-.01em;
 }
-
 button,input{font:inherit}
 button{cursor:pointer}
 
@@ -48,7 +47,6 @@ button{cursor:pointer}
   gap:16px;
   box-shadow:0 5px 22px rgba(8,31,59,.14);
 }
-
 .brand{
   display:flex;
   align-items:center;
@@ -57,711 +55,272 @@ button{cursor:pointer}
   font-weight:800;
   letter-spacing:-.035em;
 }
-
 .brand-mark{
-  width:42px;
-  height:42px;
-  border-radius:14px;
+  width:42px;height:42px;border-radius:14px;
   background:linear-gradient(145deg,#70b6ff,#2468d8);
   box-shadow:0 5px 15px #061c3a55;
-  display:grid;
-  place-items:center;
-  font-size:23px;
-  font-weight:800;
+  display:grid;place-items:center;
+  font-size:23px;font-weight:800;
 }
-
 .brand-sub{
-  display:block;
-  font-size:11px;
-  font-weight:400;
-  color:#c5d8f0;
-  margin-top:3px;
+  display:block;font-size:11px;font-weight:400;
+  color:#c5d8f0;margin-top:3px;
 }
-
 .top-actions{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  font-size:12px;
-  color:#dceaff;
+  display:flex;align-items:center;gap:14px;
+  font-size:12px;color:#dceaff;
 }
-
 .online-dot{
-  display:inline-block;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#26d58a;
-  margin-right:6px;
+  display:inline-block;width:8px;height:8px;
+  border-radius:50%;background:#26d58a;margin-right:6px;
 }
-
 .icon-btn{
-  width:39px;
-  height:39px;
-  border:1px solid #ffffff30;
-  background:#ffffff12;
-  color:white;
-  border-radius:13px;
+  width:39px;height:39px;border:1px solid #ffffff30;
+  background:#ffffff12;color:white;border-radius:13px;
 }
-
 main{
-  max-width:1160px;
-  margin:27px auto 112px;
-  padding:0 22px;
+  max-width:1160px;margin:27px auto 112px;padding:0 22px;
 }
-
 .welcome{
-  position:relative;
-  overflow:hidden;
-  min-height:166px;
-  padding:30px 34px;
-  margin-bottom:22px;
-  border-radius:24px;
-  color:white;
-  background:linear-gradient(112deg,#102f56,#1c5aa2 68%,#4e91d8);
+  position:relative;overflow:hidden;min-height:166px;
+  padding:30px 34px;margin-bottom:22px;border-radius:24px;
+  color:white;background:linear-gradient(112deg,#102f56,#1c5aa2 68%,#4e91d8);
   box-shadow:0 14px 34px rgba(24,76,137,.16);
 }
-
 .welcome:after{
-  content:"";
-  position:absolute;
-  width:310px;
-  height:310px;
-  border:42px solid #ffffff13;
-  border-radius:50%;
-  right:-35px;
-  top:-112px;
+  content:"";position:absolute;width:310px;height:310px;
+  border:42px solid #ffffff13;border-radius:50%;
+  right:-35px;top:-112px;
   box-shadow:0 0 0 34px #ffffff08,0 0 0 70px #ffffff05;
 }
-
 .welcome h1{
-  font-size:30px;
-  font-weight:750;
-  letter-spacing:-.035em;
-  margin:0 0 9px;
-  position:relative;
-  z-index:1;
+  font-size:30px;font-weight:750;letter-spacing:-.035em;
+  margin:0 0 9px;position:relative;z-index:1;
 }
-
 .welcome p{
-  font-size:14px;
-  color:#e0edff;
-  margin:0;
-  position:relative;
-  z-index:1;
+  font-size:14px;color:#e0edff;margin:0;
+  position:relative;z-index:1;
 }
-
 .welcome-tag{
-  display:inline-flex;
-  margin-top:19px;
-  padding:8px 13px;
-  border:1px solid #ffffff25;
-  border-radius:20px;
-  background:#ffffff17;
-  color:#eaf4ff;
-  font-size:11px;
-  position:relative;
-  z-index:1;
+  display:inline-flex;margin-top:19px;padding:8px 13px;
+  border:1px solid #ffffff25;border-radius:20px;
+  background:#ffffff17;color:#eaf4ff;font-size:11px;
+  position:relative;z-index:1;
 }
-
-/* ГЛАВНАЯ: ТРИ КАРТОЧКИ В РЯД */
-
 .grid,.action-grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:17px;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px;
 }
-
 .action-grid{margin-top:17px}
-
 .card{
-  min-width:0;
-  background:white;
+  min-width:0;background:white;
   border:1px solid rgba(222,231,243,.95);
-  border-radius:21px;
-  box-shadow:var(--shadow);
+  border-radius:21px;box-shadow:var(--shadow);
 }
-
 .metric-card{
-  min-height:166px;
-  padding:20px 21px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  text-align:left;
-  position:relative;
-  overflow:hidden;
-  transition:.18s;
+  min-height:166px;padding:20px 21px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  text-align:left;position:relative;overflow:hidden;transition:.18s;
 }
-
 .metric-card:after{
-  content:"";
-  position:absolute;
-  width:145px;
-  height:145px;
-  border-radius:50%;
-  background:linear-gradient(145deg,#eff5ff,#e5efff);
-  right:-60px;
-  top:-62px;
+  content:"";position:absolute;width:145px;height:145px;
+  border-radius:50%;background:linear-gradient(145deg,#eff5ff,#e5efff);
+  right:-60px;top:-62px;
 }
-
 .metric-card:hover,.action-card:hover{
-  transform:translateY(-3px);
-  border-color:#c5d8f4;
+  transform:translateY(-3px);border-color:#c5d8f4;
   box-shadow:0 15px 32px rgba(24,76,137,.12);
 }
-
 .card-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:relative;
-  z-index:1;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:1;
 }
-
 .card-icon,.action-icon,.event-icon{
-  width:48px;
-  height:48px;
-  border-radius:15px;
+  width:48px;height:48px;border-radius:15px;
   background:linear-gradient(145deg,#edf4ff,#e2edff);
-  color:#2869cf;
-  display:grid;
-  place-items:center;
-  font-size:22px;
-  box-shadow:inset 0 0 0 1px #dce9fb;
+  color:#2869cf;display:grid;place-items:center;
+  font-size:22px;box-shadow:inset 0 0 0 1px #dce9fb;
   flex-shrink:0;
 }
-
-.arrow{
-  font-size:24px;
-  color:#6b94ce;
-  font-weight:500;
-}
-
+.arrow{font-size:24px;color:#6b94ce;font-weight:500}
 .card-title{
-  font-size:16px;
-  font-weight:750;
-  margin-top:15px;
-  letter-spacing:-.02em;
+  font-size:16px;font-weight:750;margin-top:15px;letter-spacing:-.02em;
 }
-
-.metric{
-  font-size:31px;
-  font-weight:800;
-  color:#173b68;
-  margin-top:7px;
-}
-
-.card-sub{
-  font-size:12px;
-  color:#8291a6;
-  margin-top:4px;
-}
-
+.metric{font-size:31px;font-weight:800;color:#173b68;margin-top:7px}
+.card-sub{font-size:12px;color:#8291a6;margin-top:4px}
 .action-card{
-  min-height:166px;
-  padding:20px 21px;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  position:relative;
-  text-align:left;
-  color:var(--text);
-  transition:.18s;
+  min-height:166px;padding:20px 21px;
+  display:flex;flex-direction:column;align-items:flex-start;
+  justify-content:space-between;gap:12px;position:relative;
+  text-align:left;color:var(--text);transition:.18s;
 }
-
 .action-card strong{
-  display:block;
-  font-size:16px;
-  font-weight:750;
-  margin-bottom:5px;
-  letter-spacing:-.02em;
+  display:block;font-size:16px;font-weight:750;
+  margin-bottom:5px;letter-spacing:-.02em;
 }
-
-.action-card span:not(.arrow){
-  font-size:12px;
-  color:var(--muted);
-}
-
-.action-card>.arrow{
-  position:absolute;
-  right:19px;
-  top:20px;
-}
-
+.action-card span:not(.arrow){font-size:12px;color:var(--muted)}
+.action-card>.arrow{position:absolute;right:19px;top:20px}
 .help{
-  margin-top:19px;
-  border-radius:21px;
-  padding:20px 24px;
-  color:white;
+  margin-top:19px;border-radius:21px;padding:20px 24px;color:white;
   background:linear-gradient(110deg,#12345e,#1d5da8);
   box-shadow:0 10px 26px rgba(17,63,115,.14);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
+  display:flex;align-items:center;justify-content:space-between;gap:15px;
 }
-
 .help strong{font-size:16px}
 .help p{font-size:12px;color:#d9e8fb;margin:5px 0 0}
-
 .help button{
-  background:white;
-  color:var(--navy);
-  border:0;
-  border-radius:12px;
-  padding:12px 17px;
-  font-weight:700;
-  white-space:nowrap;
+  background:white;color:var(--navy);border:0;
+  border-radius:12px;padding:12px 17px;font-weight:700;white-space:nowrap;
 }
-
-.events{
-  margin-top:19px;
-  overflow:hidden;
-}
-
+.events{margin-top:19px;overflow:hidden}
 .events-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:20px 23px;
-  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 23px;border-bottom:1px solid var(--line);
 }
-
-.events-head h2{
-  font-size:17px;
-  margin:0;
-}
-
-.events-head a{
-  color:var(--blue);
-  font-size:13px;
-  font-weight:650;
-  text-decoration:none;
-}
-
+.events-head h2{font-size:17px;margin:0}
+.events-head a{color:var(--blue);font-size:13px;font-weight:650;text-decoration:none}
 .event{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:16px 23px;
-  border-bottom:1px solid #edf1f6;
+  display:flex;align-items:center;gap:13px;
+  padding:16px 23px;border-bottom:1px solid #edf1f6;
 }
-
 .event:last-child{border-bottom:0}
-
-.event-icon{
-  width:42px;
-  height:42px;
-  flex:0 0 42px;
-  border-radius:14px;
-}
-
+.event-icon{width:42px;height:42px;flex:0 0 42px;border-radius:14px}
 .event-main{flex:1;min-width:0}
 .event-main strong{font-size:13px;display:block}
 .event-main span{font-size:12px;color:var(--muted);display:block;margin-top:5px}
 
-/* ВХОД */
-
-.login-wrap{
-  max-width:440px;
-  margin:66px auto;
-}
-
-.login-wrap .card{
-  padding:30px;
-  border-radius:23px;
-}
-
-.login-wrap h1{
-  font-size:24px;
-  margin:0 0 8px;
-}
-
-.muted{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.5;
-}
-
+.login-wrap{max-width:440px;margin:66px auto}
+.login-wrap .card{padding:30px;border-radius:23px}
+.login-wrap h1{font-size:24px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}
 input{
-  width:100%;
-  padding:14px 15px;
-  border:1px solid #dfe7f1;
-  border-radius:13px;
-  margin-top:12px;
-  font-size:15px;
-  outline:none;
+  width:100%;padding:14px 15px;border:1px solid #dfe7f1;
+  border-radius:13px;margin-top:12px;font-size:15px;outline:none;
 }
-
-input:focus{
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px #2764d81a;
-}
-
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2764d81a}
 .primary{
   background:linear-gradient(110deg,#276cdb,#1b56bb);
-  color:white;
-  border:0;
-  border-radius:13px;
-  padding:13px 18px;
-  font-weight:700;
-  box-shadow:0 5px 13px #2468d82b;
+  color:white;border:0;border-radius:13px;padding:13px 18px;
+  font-weight:700;box-shadow:0 5px 13px #2468d82b;
 }
-
-.primary:disabled{
-  opacity:.6;
-  cursor:wait;
-}
-
-.login-wrap .primary{
-  width:100%;
-  margin-top:14px;
-}
-
-.status{
-  font-size:13px;
-  margin-top:12px;
-  min-height:18px;
-}
-
+.primary:disabled{opacity:.6;cursor:wait}
+.login-wrap .primary{width:100%;margin-top:14px}
+.status{font-size:13px;margin-top:12px;min-height:18px}
 .error{color:#c0392b}
 .ok{color:var(--green)}
 .hidden{display:none!important}
 
-/* РАЗДЕЛЫ */
-
 .section-view{margin-top:22px}
-
-.section-view .card{
-  padding:26px;
-  border-radius:22px;
-}
-
-.section-view h2{
-  font-size:22px;
-  margin:0 0 8px;
-}
-
+.section-view .card{padding:26px;border-radius:22px}
+.section-view h2{font-size:22px;margin:0 0 8px}
 .section-view .back{
-  margin-top:18px;
-  background:#eaf2ff;
-  color:var(--blue);
-  border:0;
-  border-radius:12px;
-  padding:11px 15px;
-  font-weight:700;
+  margin-top:18px;background:#eaf2ff;color:var(--blue);
+  border:0;border-radius:12px;padding:11px 15px;font-weight:700;
 }
-
-/* ОСТАТКИ */
-
 .stock-toolbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:18px;
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;flex-wrap:wrap;margin-top:18px;
 }
-
-.stock-toolbar input{
-  max-width:360px;
-  margin:0;
-}
-
-.table-wrap{
-  width:100%;
-  overflow-x:auto;
-}
-
+.stock-toolbar input{max-width:360px;margin:0}
+.table-wrap{width:100%;overflow-x:auto}
 table{
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  margin-top:14px;
-  table-layout:fixed;
+  width:100%;border-collapse:separate;border-spacing:0;
+  margin-top:14px;table-layout:fixed;
 }
-
 th,td{
-  text-align:left;
-  padding:12px 9px;
-  border-bottom:1px solid #edf1f6;
-  font-size:13px;
-  line-height:1.35;
-  overflow-wrap:anywhere;
+  text-align:left;padding:12px 9px;border-bottom:1px solid #edf1f6;
+  font-size:13px;line-height:1.35;overflow-wrap:anywhere;
 }
-
-th{
-  color:var(--muted);
-  font-size:11px;
-  background:#f6f8fc;
-}
-
+th{color:var(--muted);font-size:11px;background:#f6f8fc}
 .right{text-align:right}
 .qty{font-weight:700}
-
-/* ИТОГОВАЯ СТРОКА */
-
 tfoot td{
-  background:#eaf2ff;
-  color:#173b68;
-  font-size:13px;
-  font-weight:800;
-  border-top:2px solid #c9dcf8;
-  border-bottom:0;
-  padding-top:13px;
-  padding-bottom:13px;
+  background:#eaf2ff;color:#173b68;font-size:13px;font-weight:800;
+  border-top:2px solid #c9dcf8;border-bottom:0;padding-top:13px;padding-bottom:13px;
 }
-
-.note{
-  font-size:11px;
-  color:#94a1b2;
-  margin-top:15px;
-}
-
-/* НИЖНЯЯ НАВИГАЦИЯ */
+.note{font-size:11px;color:#94a1b2;margin-top:15px}
 
 .bottom-nav{
-  position:fixed;
-  z-index:10;
-  bottom:16px;
-  left:50%;
-  transform:translateX(-50%);
-  width:min(700px,calc(100% - 28px));
-  padding:8px;
-  border-radius:21px;
+  position:fixed;z-index:10;bottom:16px;left:50%;transform:translateX(-50%);
+  width:min(700px,calc(100% - 28px));padding:8px;border-radius:21px;
   background:linear-gradient(110deg,#0c2340,#173f6c);
   box-shadow:0 14px 38px rgba(9,34,64,.25);
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
+  display:grid;grid-template-columns:repeat(4,1fr);
 }
-
 .nav-item{
-  background:transparent;
-  border:0;
-  border-radius:15px;
-  color:#c5d4e7;
-  padding:9px 5px;
-  font-size:11px;
+  background:transparent;border:0;border-radius:15px;
+  color:#c5d4e7;padding:9px 5px;font-size:11px;
 }
-
-.nav-item b{
-  display:block;
-  font-size:18px;
-  margin-bottom:5px;
-}
-
-.nav-item.active{
-  background:linear-gradient(120deg,#347ce5,#2462c8);
-  color:white;
-}
-
-/* МОБИЛЬНАЯ ВЕРСИЯ */
+.nav-item b{display:block;font-size:18px;margin-bottom:5px}
+.nav-item.active{background:linear-gradient(120deg,#347ce5,#2462c8);color:white}
 
 @media(max-width:760px){
-
-  main{
-    margin:14px auto 110px;
-    padding:0 10px;
-  }
-
-  .topbar{
-    padding:13px 15px;
-    min-height:68px;
-  }
-
+  main{margin:14px auto 110px;padding:0 10px}
+  .topbar{padding:13px 15px;min-height:68px}
   .brand{font-size:21px}
   .brand-mark{width:38px;height:38px}
-
-  .grid,.action-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:8px;
-  }
-
+  .grid,.action-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
   .action-grid{margin-top:8px}
-
-  .metric-card,.action-card{
-    min-width:0;
-    min-height:125px;
-    padding:10px 8px;
-    border-radius:15px;
-  }
-
+  .metric-card,.action-card{min-width:0;min-height:125px;padding:10px 8px;border-radius:15px}
   .card-icon,.action-icon{
-    width:34px;
-    height:34px;
-    flex:0 0 34px;
-    border-radius:11px;
+    width:34px;height:34px;flex:0 0 34px;border-radius:11px;
   }
-
-  .card-icon:before,.action-icon:before{
-    font-size:18px;
-  }
-
+  .card-icon:before,.action-icon:before{font-size:18px}
   .card-title,.action-card strong{
-    font-size:12px;
-    line-height:1.25;
-    margin-top:8px;
-    overflow-wrap:anywhere;
+    font-size:12px;line-height:1.25;margin-top:8px;overflow-wrap:anywhere;
   }
-
   .action-card strong{margin-top:0}
-
-  .action-card{
-    justify-content:space-between;
-    gap:6px;
-  }
-
-  .action-card span:not(.arrow){
-    font-size:10px;
-    line-height:1.25;
-  }
-
-  .action-card>.arrow{
-    right:8px;
-    top:9px;
-    font-size:17px;
-  }
-
-  .metric{
-    font-size:22px;
-    margin-top:4px;
-  }
-
-  .card-sub{
-    font-size:10px;
-    line-height:1.2;
-  }
-
-  .welcome{
-    padding:20px 17px;
-    min-height:139px;
-    border-radius:19px;
-    margin-bottom:13px;
-  }
-
+  .action-card{justify-content:space-between;gap:6px}
+  .action-card span:not(.arrow){font-size:10px;line-height:1.25}
+  .action-card>.arrow{right:8px;top:9px;font-size:17px}
+  .metric{font-size:22px;margin-top:4px}
+  .card-sub{font-size:10px;line-height:1.2}
+  .welcome{padding:20px 17px;min-height:139px;border-radius:19px;margin-bottom:13px}
   .welcome h1{font-size:25px}
   .welcome-tag{margin-top:14px}
-
-  .help{
-    padding:17px;
-    border-radius:18px;
-  }
-
+  .help{padding:17px;border-radius:18px}
   .events-head{padding:16px}
   .event{padding:13px 15px}
-
-  /* КОМПАКТНАЯ ТАБЛИЦА */
-
-  .section-view .card{
-    padding:14px 10px;
-  }
-
+  .section-view .card{padding:14px 10px}
   .section-view h2{font-size:19px}
-
-  .table-wrap{
-    overflow-x:hidden;
-  }
-
-  table{
-    width:100%;
-    min-width:0;
-    table-layout:fixed;
-  }
-
+  .table-wrap{overflow-x:hidden}
+  table{width:100%;min-width:0;table-layout:fixed}
   th,td{
-    padding:8px 3px;
-    font-size:10px;
-    line-height:1.3;
-    overflow-wrap:anywhere;
-    vertical-align:middle;
+    padding:8px 3px;font-size:10px;line-height:1.3;
+    overflow-wrap:anywhere;vertical-align:middle;
   }
-
-  th{
-    font-size:9px;
-    white-space:normal;
-    padding-top:9px;
-    padding-bottom:9px;
-  }
-
+  th{font-size:9px;white-space:normal;padding-top:9px;padding-bottom:9px}
   th:nth-child(1),td:nth-child(1){width:39%}
   th:nth-child(2),td:nth-child(2){width:17%}
   th:nth-child(3),td:nth-child(3){width:15%}
   th:nth-child(4),td:nth-child(4){width:14%}
   th:nth-child(5),td:nth-child(5){width:15%}
-
   .right{text-align:center}
-
-  .qty{
-    font-size:10px;
-    white-space:nowrap;
-  }
-
-  .stock-toolbar{
-    gap:9px;
-  }
-
-  .stock-toolbar input{
-    max-width:100%;
-    font-size:13px;
-  }
-
-  .stock-toolbar button{
-    width:100%;
-  }
-
-  tfoot td{
-    font-size:10px;
-    padding:10px 2px;
-    overflow-wrap:normal;
-  }
-
-  .bottom-nav{
-    width:calc(100% - 16px);
-    bottom:7px;
-  }
+  .qty{font-size:10px;white-space:nowrap}
+  .stock-toolbar{gap:9px}
+  .stock-toolbar input{max-width:100%;font-size:13px}
+  .stock-toolbar button{width:100%}
+  tfoot td{font-size:10px;padding:10px 2px;overflow-wrap:normal}
+  .bottom-nav{width:calc(100% - 16px);bottom:7px}
 }
-
 @media(max-width:360px){
-
   .grid,.action-grid{gap:6px}
-
-  .metric-card,.action-card{
-    padding:8px 6px;
-  }
-
-  .card-title,.action-card strong{
-    font-size:11px;
-  }
-
+  .metric-card,.action-card{padding:8px 6px}
+  .card-title,.action-card strong{font-size:11px}
   .metric{font-size:20px}
-
-  th,td{
-    font-size:9px;
-    padding:7px 2px;
-  }
+  th,td{font-size:9px;padding:7px 2px}
 }
-
 button:focus-visible,a:focus-visible,input:focus-visible{
-  outline:3px solid #79aaf0;
-  outline-offset:3px;
+  outline:3px solid #79aaf0;outline-offset:3px;
 }
 </style>
 </head>
 
 <body>
-
 <header class="topbar">
   <div class="brand">
     <div class="brand-mark">Q</div>
-    <div>
-      Q-log
-      <span class="brand-sub">Личный кабинет клиента</span>
-    </div>
+    <div>Q-log<span class="brand-sub">Личный кабинет клиента</span></div>
   </div>
-
   <div class="top-actions">
     <span><i class="online-dot"></i>Онлайн</span>
     <button class="icon-btn" type="button" aria-label="Уведомления">♧</button>
@@ -769,29 +328,20 @@ button:focus-visible,a:focus-visible,input:focus-visible{
 </header>
 
 <main>
-
-  <!-- ВХОД -->
-
   <section id="login" class="login-wrap">
     <div class="card">
       <h1>Вход в личный кабинет</h1>
       <p class="muted">Введите логин и пароль для доступа к данным вашего склада.</p>
-
       <form onsubmit="login();return false">
         <input id="username" placeholder="Логин" autocomplete="username" required>
         <input id="password" type="password" placeholder="Пароль" autocomplete="current-password" required>
-
         <button id="loginButton" class="primary" type="submit">Войти</button>
       </form>
-
       <p id="error" class="status error"></p>
     </div>
   </section>
 
-  <!-- ГЛАВНАЯ -->
-
   <section id="dashboard" class="hidden">
-
     <div class="welcome">
       <h1>Добрый день!</h1>
       <p>Ваш складской кабинет Q-log</p>
@@ -799,81 +349,46 @@ button:focus-visible,a:focus-visible,input:focus-visible{
     </div>
 
     <div class="grid">
-
       <button class="card metric-card" onclick="openSection('stock')">
-        <div class="card-top">
-          <div class="card-icon">▦</div>
-          <span class="arrow">›</span>
-        </div>
+        <div class="card-top"><div class="card-icon">▦</div><span class="arrow">›</span></div>
         <div>
           <div class="card-title">Мои остатки</div>
           <div class="metric" id="count">—</div>
           <div class="card-sub">Позиций товара</div>
         </div>
       </button>
-
       <button class="card metric-card" onclick="openSection('fbo')">
-        <div class="card-top">
-          <div class="card-icon">⇧</div>
-          <span class="arrow">›</span>
-        </div>
+        <div class="card-top"><div class="card-icon">⇧</div><span class="arrow">›</span></div>
         <div>
           <div class="card-title">Отгрузки FBO</div>
           <div class="metric">—</div>
           <div class="card-sub">История отгрузок</div>
         </div>
       </button>
-
       <button class="card metric-card" onclick="openSection('finance')">
-        <div class="card-top">
-          <div class="card-icon">₽</div>
-          <span class="arrow">›</span>
-        </div>
+        <div class="card-top"><div class="card-icon">₽</div><span class="arrow">›</span></div>
         <div>
           <div class="card-title">Финансы</div>
           <div class="metric" style="font-size:19px">Счета и оплаты</div>
           <div class="card-sub">История финансовых операций</div>
         </div>
       </button>
-
     </div>
 
     <div class="action-grid">
-
       <button class="card action-card" onclick="openSection('pickup')">
-        <div class="action-icon">↗</div>
-        <div>
-          <strong>Забор товара</strong>
-          <span>Новая заявка</span>
-        </div>
-        <span class="arrow">›</span>
+        <div class="action-icon">↗</div><div><strong>Забор товара</strong><span>Новая заявка</span></div><span class="arrow">›</span>
       </button>
-
       <button class="card action-card" onclick="openSection('returns')">
-        <div class="action-icon">↶</div>
-        <div>
-          <strong>Возвраты</strong>
-          <span>Оформить заявку</span>
-        </div>
-        <span class="arrow">›</span>
+        <div class="action-icon">↶</div><div><strong>Возвраты</strong><span>Оформить заявку</span></div><span class="arrow">›</span>
       </button>
-
       <button class="card action-card" onclick="openSection('tasks')">
-        <div class="action-icon">✓</div>
-        <div>
-          <strong>Задания Q-log</strong>
-          <span>Новое поручение</span>
-        </div>
-        <span class="arrow">›</span>
+        <div class="action-icon">✓</div><div><strong>Задания Q-log</strong><span>Новое поручение</span></div><span class="arrow">›</span>
       </button>
-
     </div>
 
     <div class="help">
-      <div>
-        <strong>Нужна помощь?</strong>
-        <p>Свяжитесь с командой Q-log</p>
-      </div>
+      <div><strong>Нужна помощь?</strong><p>Свяжитесь с командой Q-log</p></div>
       <button type="button" onclick="openSection('contacts')">Контакты&nbsp; ›</button>
     </div>
 
@@ -882,517 +397,284 @@ button:focus-visible,a:focus-visible,input:focus-visible{
         <h2>Последние события</h2>
         <a href="#" onclick="openSection('events');return false">Все события&nbsp; ›</a>
       </div>
-
       <div class="event">
         <div class="event-icon">↗</div>
-        <div class="event-main">
-          <strong>Отгрузки FBO</strong>
-          <span>Здесь будут отображаться ваши последние отгрузки</span>
-        </div>
+        <div class="event-main"><strong>Отгрузки FBO</strong><span>Здесь будут отображаться ваши последние отгрузки</span></div>
       </div>
-
       <div class="event">
         <div class="event-icon">₽</div>
-        <div class="event-main">
-          <strong>Счета и оплаты</strong>
-          <span>Здесь будут отображаться финансовые события</span>
-        </div>
+        <div class="event-main"><strong>Счета и оплаты</strong><span>Здесь будут отображаться финансовые события</span></div>
       </div>
     </div>
-
   </section>
-
-  <!-- ОСТАТКИ -->
 
   <section id="stockSection" class="section-view hidden">
     <div class="card">
-
       <h2>Мои остатки</h2>
       <p class="muted">Текущие данные по выделенному складу.</p>
       <p class="muted">Склад: <b id="warehouse">Ваш склад</b></p>
 
       <div class="stock-toolbar">
-        <input
-          id="search"
-          placeholder="Поиск по названию или артикулу"
-          oninput="showProducts()"
-        >
-        <button id="refreshButton" class="primary" onclick="loadProducts()">
-          Обновить остатки
-        </button>
+        <input id="search" placeholder="Поиск по названию или артикулу" oninput="showProducts()">
+        <button id="refreshButton" class="primary" onclick="loadProducts()">Обновить остатки</button>
+        <button id="downloadButton" class="primary" type="button" onclick="downloadStock()">Скачать Excel</button>
       </div>
 
       <p id="status" class="status muted">Данные загружаются при входе.</p>
 
       <div class="table-wrap">
         <table>
-
           <thead>
             <tr>
-              <th>Товар</th>
-              <th>Артикул</th>
-              <th class="right">Остаток</th>
-              <th class="right">Резерв</th>
-              <th class="right">В пути</th>
+              <th>Товар</th><th>Артикул</th>
+              <th class="right">Остаток</th><th class="right">Резерв</th><th class="right">В пути</th>
             </tr>
           </thead>
-
           <tbody id="products">
-            <tr>
-              <td colspan="5">Откройте раздел после входа.</td>
-            </tr>
+            <tr><td colspan="5">Откройте раздел после входа.</td></tr>
           </tbody>
-
           <tfoot id="stockTotals">
-            <tr>
-              <td colspan="5">ИТОГО: —</td>
-            </tr>
+            <tr><td colspan="5">ИТОГО: —</td></tr>
           </tfoot>
-
         </table>
       </div>
 
       <p class="note" id="updated"></p>
-
       <button class="back" onclick="showDashboard()">← На главную</button>
-
     </div>
   </section>
-
-  <!-- ОСТАЛЬНЫЕ РАЗДЕЛЫ -->
 
   <section id="placeholderSection" class="section-view hidden">
     <div class="card">
-
       <div class="card-icon" id="placeholderIcon">◈</div>
-
       <h2 id="placeholderTitle">Раздел Q-log</h2>
-
-      <p class="muted" id="placeholderText">
-        Этот раздел будет подключён на следующем этапе разработки.
-      </p>
-
+      <p class="muted" id="placeholderText">Этот раздел будет подключён на следующем этапе разработки.</p>
       <button class="back" onclick="showDashboard()">← На главную</button>
-
     </div>
   </section>
-
 </main>
 
-<!-- НИЖНЯЯ НАВИГАЦИЯ -->
-
 <nav id="bottomNav" class="bottom-nav hidden" aria-label="Основная навигация">
-
-  <button class="nav-item active" onclick="showDashboard()">
-    <b>⌂</b>Главная
-  </button>
-
-  <button class="nav-item" onclick="openSection('events')">
-    <b>▥</b>События
-  </button>
-
-  <button class="nav-item" onclick="openSection('tasks')">
-    <b>☷</b>Заявки
-  </button>
-
-  <button class="nav-item" onclick="logout()">
-    <b>○</b>Выйти
-  </button>
-
+  <button class="nav-item active" onclick="showDashboard()"><b>⌂</b>Главная</button>
+  <button class="nav-item" onclick="openSection('events')"><b>▥</b>События</button>
+  <button class="nav-item" onclick="openSection('tasks')"><b>☷</b>Заявки</button>
+  <button class="nav-item" onclick="logout()"><b>○</b>Выйти</button>
 </nav>
 
 <script>
-
-// АДРЕС СЕРВЕРА Q-LOG
-
 const API_URL = "https://q-log-server.onrender.com";
 
 let authHeader = "";
 let items = [];
 
-// ОПИСАНИЕ РАЗДЕЛОВ
-
 const sectionInfo = {
-
-  fbo:[
-    "Отгрузки FBO",
-    "История отгрузок с маркетплейсов появится здесь после подключения журнала операций.",
-    "⇧"
-  ],
-
-  finance:[
-    "Финансы",
-    "Здесь будут отображаться счета, складские услуги, логистика и статусы оплаты.",
-    "₽"
-  ],
-
-  pickup:[
-    "Забор товара от поставщика",
-    "Здесь появится форма создания заявки на забор товара.",
-    "↗"
-  ],
-
-  returns:[
-    "Возвраты",
-    "Здесь появится форма заявки на забор возвратов.",
-    "↶"
-  ],
-
-  tasks:[
-    "Задания Q-log",
-    "Здесь можно будет создавать поручения складу.",
-    "✓"
-  ],
-
-  contacts:[
-    "Контакты Q-log",
-    "Здесь будут указаны телефон и способы связи с командой Q-log.",
-    "☎"
-  ],
-
-  events:[
-    "Последние события",
-    "Здесь будет отображаться история ваших заявок, отгрузок и финансовых операций.",
-    "◷"
-  ]
-
+  fbo:["Отгрузки FBO","История отгрузок с маркетплейсов появится здесь после подключения журнала операций.","⇧"],
+  finance:["Финансы","Здесь будут отображаться счета, складские услуги, логистика и статусы оплаты.","₽"],
+  pickup:["Забор товара от поставщика","Здесь появится форма создания заявки на забор товара.","↗"],
+  returns:["Возвраты","Здесь появится форма заявки на забор возвратов.","↶"],
+  tasks:["Задания Q-log","Здесь можно будет создавать поручения складу.","✓"],
+  contacts:["Контакты Q-log","Здесь будут указаны телефон и способы связи с командой Q-log.","☎"],
+  events:["Последние события","Здесь будет отображаться история ваших заявок, отгрузок и финансовых операций.","◷"]
 };
 
-
-// ГЛАВНАЯ
-
 function showDashboard(){
-
   document.getElementById("dashboard").classList.remove("hidden");
-
   document.getElementById("stockSection").classList.add("hidden");
-
   document.getElementById("placeholderSection").classList.add("hidden");
-
   setActiveNav(0);
-
   window.scrollTo({top:0,behavior:"smooth"});
-
 }
 
-
-// ОТКРЫТИЕ РАЗДЕЛОВ
-
 function openSection(name){
-
   if(name==="stock"){
-
     document.getElementById("dashboard").classList.add("hidden");
-
     document.getElementById("placeholderSection").classList.add("hidden");
-
     document.getElementById("stockSection").classList.remove("hidden");
-
     loadProducts();
-
     setActiveNav(-1);
-
     window.scrollTo({top:0,behavior:"smooth"});
-
     return;
   }
 
   const info=sectionInfo[name]||sectionInfo.events;
-
   document.getElementById("dashboard").classList.add("hidden");
-
   document.getElementById("stockSection").classList.add("hidden");
-
   document.getElementById("placeholderSection").classList.remove("hidden");
-
   document.getElementById("placeholderTitle").textContent=info[0];
-
   document.getElementById("placeholderText").textContent=info[1];
-
   document.getElementById("placeholderIcon").textContent=info[2];
-
   setActiveNav(name==="tasks"?2:name==="events"?1:-1);
-
   window.scrollTo({top:0,behavior:"smooth"});
-
 }
-
-
-// АКТИВНАЯ КНОПКА НАВИГАЦИИ
 
 function setActiveNav(index){
-
   document.querySelectorAll(".nav-item").forEach((el,i)=>{
-
     el.classList.toggle("active",i===index);
-
   });
-
 }
-
-
-// СТАТУС ЗАГРУЗКИ
 
 function setStatus(message,type="muted"){
-
   const el=document.getElementById("status");
-
   el.textContent=message;
-
   el.className="status "+type;
-
 }
 
-
-// АВТОРИЗАЦИЯ
-
 async function login(){
-
   const username=document.getElementById("username").value.trim();
-
   const password=document.getElementById("password").value;
-
   const error=document.getElementById("error");
-
   const button=document.getElementById("loginButton");
 
   error.textContent="";
-
   button.disabled=true;
-
   button.textContent="Проверка...";
-
   authHeader="Basic "+btoa(unescape(encodeURIComponent(username+":"+password)));
 
   try{
-
     await loadProducts(true);
-
     document.getElementById("login").classList.add("hidden");
-
     document.getElementById("dashboard").classList.remove("hidden");
-
     document.getElementById("bottomNav").classList.remove("hidden");
-
   }catch(e){
-
     authHeader="";
-
     error.textContent=e.message;
-
   }finally{
-
     button.disabled=false;
-
     button.textContent="Войти";
-
   }
-
 }
 
-
-// ЗАГРУЗКА ОСТАТКОВ С СЕРВЕРА
-
 async function loadProducts(checkLogin=false){
-
   const button=document.getElementById("refreshButton");
-
   if(button)button.disabled=true;
-
   if(!checkLogin)setStatus("Обновляем остатки...");
 
   try{
-
     const response=await fetch(API_URL+"/api/stock",{
-
       method:"GET",
-
-      headers:{
-        "Authorization":authHeader
-      }
-
+      headers:{"Authorization":authHeader}
     });
 
-    if(response.status===401){
-
-      throw new Error("Неверный логин или пароль");
-
-    }
-
-    if(!response.ok){
-
-      throw new Error("Ошибка сервера: "+response.status);
-
-    }
+    if(response.status===401)throw new Error("Неверный логин или пароль");
+    if(!response.ok)throw new Error("Ошибка сервера: "+response.status);
 
     const data=await response.json();
-
     items=data.items||[];
 
     document.getElementById("warehouse").textContent=data.warehouse||"Ваш склад";
-
     document.getElementById("count").textContent=items.length;
 
     showProducts();
-
     setStatus("Данные успешно загружены","ok");
-
     document.getElementById("updated").textContent=
       "Последнее обновление: "+new Date().toLocaleString("ru-RU");
-
   }catch(e){
-
     if(checkLogin)throw e;
-
     setStatus("Не удалось загрузить данные: "+e.message,"error");
-
   }finally{
-
     if(button)button.disabled=false;
-
   }
-
 }
-
-
-// ЗАЩИТА ОТ HTML-ВСТАВОК
 
 function escapeHtml(value){
-
   return String(value??"").replace(/[&<>"']/g,c=>({
-
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[c]));
-
 }
 
-
-// ОТОБРАЖЕНИЕ ТОВАРОВ И ОБЩИХ ОСТАТКОВ
-
 function showProducts(){
-
   const q=document.getElementById("search").value.toLowerCase().trim();
 
   const filtered=items.filter(x=>
-
-    ((x.product||"")+" "+(x.article||""))
-
-    .toLowerCase()
-
-    .includes(q)
-
+    ((x.product||"")+" "+(x.article||"")).toLowerCase().includes(q)
   );
 
   const tbody=document.getElementById("products");
 
   tbody.innerHTML=filtered.map(x=>`
-
     <tr>
-
       <td>${escapeHtml(x.product)}</td>
-
       <td>${escapeHtml(x.article)}</td>
-
       <td class="right qty">${Number(x.stock||0)} шт.</td>
-
       <td class="right">${Number(x.reserve||0)} шт.</td>
-
       <td class="right">${Number(x.inTransit||0)} шт.</td>
-
     </tr>
-
   `).join("");
 
   if(filtered.length===0){
-
-    tbody.innerHTML=
-      '<tr><td colspan="5">Товары не найдены</td></tr>';
-
+    tbody.innerHTML='<tr><td colspan="5">Товары не найдены</td></tr>';
   }
 
-
-  // ОБЩИЕ СУММЫ ПО ВСЕМ ТОВАРАМ СКЛАДА
-
-  // Поиск не влияет на итоговые показатели.
-
-  const totalStock=items.reduce(
-
-    (sum,x)=>sum+Number(x.stock||0),0
-
-  );
-
-  const totalReserve=items.reduce(
-
-    (sum,x)=>sum+Number(x.reserve||0),0
-
-  );
-
-  const totalTransit=items.reduce(
-
-    (sum,x)=>sum+Number(x.inTransit||0),0
-
-  );
-
+  const totalStock=items.reduce((sum,x)=>sum+Number(x.stock||0),0);
+  const totalReserve=items.reduce((sum,x)=>sum+Number(x.reserve||0),0);
+  const totalTransit=items.reduce((sum,x)=>sum+Number(x.inTransit||0),0);
 
   document.getElementById("stockTotals").innerHTML=`
-
     <tr>
-
       <td colspan="2"><b>ИТОГО</b></td>
-
       <td class="right">${totalStock}</td>
-
       <td class="right">${totalReserve}</td>
-
       <td class="right">${totalTransit}</td>
-
     </tr>
-
   `;
-
 }
 
+// ВЫГРУЗКА ВСЕХ ОСТАТКОВ В EXCEL
+function downloadStock(){
+  if(!items.length){
+    setStatus("Нет данных для выгрузки","error");
+    return;
+  }
 
-// ВЫХОД ИЗ КАБИНЕТА
+  if(typeof XLSX==="undefined"){
+    setStatus("Не удалось загрузить модуль Excel. Проверьте подключение к интернету.","error");
+    return;
+  }
+
+  const rows=items.map(x=>({
+    "Товар":x.product??"",
+    "Артикул":x.article??"",
+    "Остаток":Number(x.stock||0),
+    "Резерв":Number(x.reserve||0),
+    "В пути":Number(x.inTransit||0)
+  }));
+
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws["!cols"]=[
+    {wch:35},{wch:20},{wch:14},{wch:14},{wch:14}
+  ];
+
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Остатки");
+
+  const now=new Date();
+  const date=now.getFullYear()+"-"+
+    String(now.getMonth()+1).padStart(2,"0")+"-"+
+    String(now.getDate()).padStart(2,"0");
+
+  XLSX.writeFile(wb,"Остатки_Q-log_"+date+".xlsx");
+}
 
 function logout(){
-
   authHeader="";
-
   items=[];
 
   document.getElementById("dashboard").classList.add("hidden");
-
   document.getElementById("stockSection").classList.add("hidden");
-
   document.getElementById("placeholderSection").classList.add("hidden");
-
   document.getElementById("bottomNav").classList.add("hidden");
-
   document.getElementById("login").classList.remove("hidden");
 
   document.getElementById("password").value="";
-
   document.getElementById("search").value="";
-
   document.getElementById("error").textContent="";
-
   document.getElementById("products").innerHTML=
     '<tr><td colspan="5">Откройте раздел после входа.</td></tr>';
-
   document.getElementById("stockTotals").innerHTML=
     '<tr><td colspan="5">ИТОГО: —</td></tr>';
 
   window.scrollTo({top:0,behavior:"smooth"});
-
 }
-
 </script>
-
 </body>
 </html>
