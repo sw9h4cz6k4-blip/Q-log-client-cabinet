@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -326,11 +327,11 @@ button:focus-visible,a:focus-visible,input:focus-visible{
 </header>
 
 <main>
- <section id="login" class="login-wrap">
+ <section id="loginSection" class="login-wrap">
  <div class="card">
  <h1>Вход в личный кабинет</h1>
  <p class="muted">Введите логин и пароль для доступа к данным вашего склада.</p>
- <form onsubmit="login();return false">
+ <form onsubmit="handleLogin(event);return false">
  <input id="username" placeholder="Логин" autocomplete="username" required>
  <input id="password" type="password" placeholder="Пароль" autocomplete="current-password" required>
  <button id="loginButton" class="primary" type="submit">Войти</button>
@@ -460,6 +461,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{
 </nav>
 
 <script>
+"use strict";
+
 const API_URL = "https://q-log-server.onrender.com";
 
 let authHeader = "";
@@ -506,7 +509,7 @@ function openSection(name){
 }
 
 function setActiveNav(index){
- документ.querySelectorAll(".nav-item").forEach((el,i)=>{
+ document.querySelectorAll(".nav-item").forEach((el,i)=>{
  el.classList.toggle("active",i===index);
  });
 }
@@ -517,7 +520,9 @@ function setStatus(message,type="muted"){
  el.className="status "+type;
 }
 
-async function login(){
+async function handleLogin(event){
+ if(event)event.preventDefault();
+
  const username=document.getElementById("username").value.trim();
  const password=document.getElementById("password").value;
  const error=document.getElementById("error");
@@ -526,16 +531,19 @@ async function login(){
  error.textContent="";
  button.disabled=true;
  button.textContent="Проверка...";
- authHeader="Basic "+btoa(unescape(encodeURIComponent(username+":"+password)));
 
  try{
+ authHeader="Basic "+btoa(unescape(encodeURIComponent(username+":"+password)));
+
  await loadProducts(true);
- document.getElementById("login").classList.add("hidden");
+
+ document.getElementById("loginSection").classList.add("hidden");
  document.getElementById("dashboard").classList.remove("hidden");
  document.getElementById("bottomNav").classList.remove("hidden");
+
  }catch(e){
  authHeader="";
- error.textContent=e.message;
+ error.textContent=e.message||"Не удалось выполнить вход";
  }finally{
  button.disabled=false;
  button.textContent="Войти";
@@ -544,6 +552,7 @@ async function login(){
 
 async function loadProducts(checkLogin=false){
  const button=document.getElementById("refreshButton");
+
  if(button)button.disabled=true;
  if(!checkLogin)setStatus("Обновляем остатки...");
 
@@ -553,19 +562,32 @@ async function loadProducts(checkLogin=false){
  headers:{"Authorization":authHeader}
  });
 
- if(response.status===401)throw new Error("Неверный логин или пароль");
- if(!response.ok)throw new Error("Ошибка сервера: "+response.status);
+ if(response.status===401){
+ throw new Error("Неверный логин или пароль");
+ }
+
+ if(!response.ok){
+ throw new Error("Ошибка сервера: "+response.status);
+ }
 
  const data=await response.json();
- items=data.items||[];
+
+ if(!data || !Array.isArray(data.items)){
+ throw new Error("Сервер вернул данные в неожиданном формате");
+ }
+
+ items=data.items;
 
  document.getElementById("warehouse").textContent=data.warehouse||"Ваш склад";
  document.getElementById("count").textContent=items.length;
 
  showProducts();
+
  setStatus("Данные успешно загружены","ok");
+
  document.getElementById("updated").textContent=
  "Последнее обновление: "+new Date().toLocaleString("ru-RU");
+
  }catch(e){
  if(checkLogin)throw e;
  setStatus("Не удалось загрузить данные: "+e.message,"error");
@@ -575,9 +597,15 @@ async function loadProducts(checkLogin=false){
 }
 
 function escapeHtml(value){
- return String(value??"").replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"<",">":">",'"':""","'":"&#39;"
- }[c]));
+ return String(value??"").replace(/[&<>"']/g,function(c){
+ return {
+ "&":"&amp;",
+ "<":"&lt;",
+ ">":"&gt;",
+ '"':"&quot;",
+ "'":"&#39;"
+ }[c];
+ });
 }
 
 function showProducts(){
@@ -617,27 +645,29 @@ function showProducts(){
  `;
 }
 
-// СКАЧИВАНИЕ ВСЕХ ОСТАТКОВ В ФОРМАТЕ CSV ДЛЯ EXCEL
+// Выгрузка всех остатков в CSV
 function downloadStock(){
- if(!items || !предметы.length){
+ if(!Array.isArray(items)||items.length===0){
  setStatus("Нет данных для выгрузки. Сначала обновите остатки.","error");
  return;
  }
+
+ let url="";
 
  try{
  const headers=["Товар","Артикул","Остаток","Резерв","В пути"];
 
  const escapeCSV=value=>{
- const text=String(value ?? "");
+ const text=String(value??"");
  return '"'+text.replace(/"/g,'""')+'"';
  };
 
  const rows=items.map(x=>[
- x.product ?? "",
- x.article ?? "",
- Number(x.stock || 0),
- Number(x.reserve || 0),
- Number(x.inTransit || 0)
+ x.product??"",
+ x.article??"",
+ Number(x.stock||0),
+ Number(x.reserve||0),
+ Number(x.inTransit||0)
  ]);
 
  const csv=[
@@ -656,32 +686,30 @@ function downloadStock(){
 
  const fileName="Остатки_Q-log_"+date+".csv";
 
- const url=URL.createObjectURL(blob);
+ url=URL.createObjectURL(blob);
 
  const link=document.createElement("a");
  link.href=url;
  link.download=fileName;
- link.target="_blank";
+ link.style.display="none";
 
  document.body.appendChild(link);
- link.dispatchEvent(new MouseEvent("click",{
- bubbles:true,
- cancelable:true,
- view:window
- }));
+ link.click();
+ link.remove();
 
- setStatus("Подготовлена выгрузка: "+items.length+" строк","ok");
+ setStatus("Файл подготовлен: "+items.length+" строк. Проверьте загрузки браузера.","ok");
 
  setTimeout(()=>{
- link.remove();
  URL.revokeObjectURL(url);
- },5000);
+ },10000);
 
  }catch(e){
+ if(url)URL.revokeObjectURL(url);
  console.error("Ошибка выгрузки:",e);
  setStatus("Ошибка при создании файла: "+e.message,"error");
  }
 }
+
 function logout(){
  authHeader="";
  items=[];
@@ -690,15 +718,20 @@ function logout(){
  document.getElementById("stockSection").classList.add("hidden");
  document.getElementById("placeholderSection").classList.add("hidden");
  document.getElementById("bottomNav").classList.add("hidden");
- document.getElementById("login").classList.remove("hidden");
+ document.getElementById("loginSection").classList.remove("hidden");
 
  document.getElementById("password").value="";
  document.getElementById("search").value="";
  document.getElementById("error").textContent="";
+
  document.getElementById("products").innerHTML=
  '<tr><td colspan="5">Откройте раздел после входа.</td></tr>';
+
  document.getElementById("stockTotals").innerHTML=
  '<tr><td colspan="5">ИТОГО: —</td></tr>';
+
+ document.getElementById("count").textContent="—";
+ document.getElementById("warehouse").textContent="Ваш склад";
 
  window.scrollTo({top:0,behavior:"smooth"});
 }
