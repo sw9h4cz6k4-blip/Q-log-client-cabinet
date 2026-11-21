@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#102b4d">
 <title>Q-log — личный кабинет</title>
-
 <style>
 :root{
   --navy:#102b4d;--navy2:#0b1f3a;--blue:#2468d8;--blue2:#1855bd;
@@ -88,9 +87,6 @@ th{color:var(--muted);font-size:11px;background:#f6f8fc}
 .qty{font-weight:700}
 tfoot td{background:#eaf2ff;color:#173b68;font-size:13px;font-weight:800;border-top:2px solid #c9dcf8;border-bottom:0;padding-top:13px;padding-bottom:13px}
 .note{font-size:11px;color:#94a1b2;margin-top:15px}
-.download-area{margin-top:12px;padding:13px;background:#eef5ff;border:1px solid #cbdcf4;border-radius:12px}
-.download-area a{display:inline-block;color:#1855bd;font-weight:700;text-decoration:underline;padding:5px 0;overflow-wrap:anywhere}
-.download-area p{margin:0 0 7px;font-size:12px;color:#526b89}
 .bottom-nav{position:fixed;z-index:10;bottom:16px;left:50%;transform:translateX(-50%);width:min(700px,calc(100% - 28px));padding:8px;border-radius:21px;background:linear-gradient(110deg,#0c2340,#173f6c);box-shadow:0 14px 38px rgba(9,34,64,.25);display:grid;grid-template-columns:repeat(4,1fr)}
 .nav-item{background:transparent;border:0;border-radius:15px;color:#c5d4e7;padding:9px 5px;font-size:11px}
 .nav-item b{display:block;font-size:18px;margin-bottom:5px}
@@ -147,7 +143,6 @@ th,td{font-size:9px;padding:7px 2px}
 button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aaf0;outline-offset:3px}
 </style>
 </head>
-
 <body>
 <header class="topbar">
   <div class="brand">
@@ -159,7 +154,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
     <button class="icon-btn" type="button" aria-label="Уведомления">♧</button>
   </div>
 </header>
-
 <main>
   <section id="login" class="login-wrap">
     <div class="card">
@@ -173,7 +167,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
       <p id="error" class="status error"></p>
     </div>
   </section>
-
   <section id="dashboard" class="hidden">
     <div class="welcome">
       <h1>Добрый день!</h1>
@@ -209,7 +202,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
       <div class="event"><div class="event-icon">₽</div><div class="event-main"><strong>Счета и оплаты</strong><span>Здесь будут отображаться финансовые события</span></div></div>
     </div>
   </section>
-
   <section id="stockSection" class="section-view hidden">
     <div class="card">
       <h2>Мои остатки</h2>
@@ -221,7 +213,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
         <button id="downloadButton" class="primary" type="button" onclick="downloadStock()">Скачать Excel</button>
       </div>
       <p id="status" class="status muted">Данные загружаются при входе.</p>
-      <div id="downloadArea" class="download-area hidden"></div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Товар</th><th>Артикул</th><th class="right">Остаток</th><th class="right">Резерв</th><th class="right">В пути</th></tr></thead>
@@ -233,7 +224,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
       <button class="back" onclick="showDashboard()">← На главную</button>
     </div>
   </section>
-
   <section id="placeholderSection" class="section-view hidden">
     <div class="card">
       <div class="card-icon" id="placeholderIcon">◈</div>
@@ -243,19 +233,16 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
     </div>
   </section>
 </main>
-
 <nav id="bottomNav" class="bottom-nav hidden" aria-label="Основная навигация">
   <button class="nav-item active" onclick="showDashboard()"><b>⌂</b>Главная</button>
   <button class="nav-item" onclick="openSection('events')"><b>▥</b>События</button>
   <button class="nav-item" onclick="openSection('tasks')"><b>☷</b>Заявки</button>
   <button class="nav-item" onclick="logout()"><b>○</b>Выйти</button>
 </nav>
-
 <script>
 const API_URL="https://q-log-server.onrender.com";
 let authHeader="";
 let items=[];
-let currentDownloadUrl="";
 
 const sectionInfo={
   fbo:["Отгрузки FBO","История отгрузок с маркетплейсов появится здесь после подключения журнала операций.","⇧"],
@@ -370,7 +357,6 @@ function showProducts(){
     </tr>
   `).join("");
   if(filtered.length===0)tbody.innerHTML='<tr><td colspan="5">Товары не найдены</td></tr>';
-
   const totalStock=items.reduce((sum,x)=>sum+Number(x.stock||0),0);
   const totalReserve=items.reduce((sum,x)=>sum+Number(x.reserve||0),0);
   const totalTransit=items.reduce((sum,x)=>sum+Number(x.inTransit||0),0);
@@ -379,15 +365,20 @@ function showProducts(){
   `;
 }
 
-// Создание CSV и показ отдельной ссылки для ручного скачивания
+/* Формирование и немедленное скачивание CSV */
 function downloadStock(){
   if(!items||!items.length){
     setStatus("Нет данных для выгрузки. Сначала обновите остатки.","error");
     return;
   }
 
+  const button=document.getElementById("downloadButton");
+
   try{
+    button.disabled=true;
+
     const headers=["Товар","Артикул","Остаток","Резерв","В пути"];
+
     const escapeCSV=value=>{
       const text=String(value??"");
       return '"'+text.replace(/"/g,'""')+'"';
@@ -406,47 +397,39 @@ function downloadStock(){
       ...rows.map(row=>row.map(escapeCSV).join(";"))
     ].join("\r\n");
 
-    const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+    const blob=new Blob(["\uFEFF"+csv],{
+      type:"application/vnd.ms-excel;charset=utf-8"
+    });
 
-    // Удаляем предыдущую временную ссылку, если она была создана
-    if(currentDownloadUrl){
-      URL.revokeObjectURL(currentDownloadUrl);
-      currentDownloadUrl="";
-    }
-
-    currentDownloadUrl=URL.createObjectURL(blob);
+    const fileUrl=URL.createObjectURL(blob);
 
     const now=new Date();
     const date=now.getFullYear()+"-"+
       String(now.getMonth()+1).padStart(2,"0")+"-"+
       String(now.getDate()).padStart(2,"0");
+
     const fileName="Ostatki_Q-log_"+date+".csv";
 
-    const area=document.getElementById("downloadArea");
-    area.innerHTML="";
-
-    const message=document.createElement("p");
-    message.textContent="Файл подготовлен. Нажмите на ссылку ниже, чтобы скачать таблицу ("+items.length+" строк):";
-
     const link=document.createElement("a");
-    link.href=currentDownloadUrl;
+    link.href=fileUrl;
     link.download=fileName;
-    link.textContent="Скачать файл с остатками Q-log";
-    link.setAttribute("role","button");
+    link.style.display="none";
 
-    link.addEventListener("click",()=>{
-      setStatus("Запрошено скачивание файла. Проверьте загрузки браузера.","ok");
-    });
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-    area.appendChild(message);
-    area.appendChild(link);
-    area.classList.remove("hidden");
+    setTimeout(()=>{
+      URL.revokeObjectURL(fileUrl);
+    },10000);
 
-    setStatus("Файл сформирован. Нажмите на синюю ссылку под этим сообщением.","ok");
+    setStatus("Выгрузка подготовлена: "+items.length+" строк. Проверьте загрузки браузера.","ok");
 
   }catch(e){
     console.error("Ошибка выгрузки:",e);
     setStatus("Ошибка при создании файла: "+e.message,"error");
+  }finally{
+    button.disabled=false;
   }
 }
 
@@ -463,11 +446,6 @@ function logout(){
   document.getElementById("error").textContent="";
   document.getElementById("products").innerHTML='<tr><td colspan="5">Откройте раздел после входа.</td></tr>';
   document.getElementById("stockTotals").innerHTML='<tr><td colspan="5">ИТОГО: —</td></tr>';
-  document.getElementById("downloadArea").classList.add("hidden");
-  if(currentDownloadUrl){
-    URL.revokeObjectURL(currentDownloadUrl);
-    currentDownloadUrl="";
-  }
   window.scrollTo({top:0,behavior:"smooth"});
 }
 </script>
