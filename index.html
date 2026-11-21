@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#102b4d">
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <title>Q-log — личный кабинет</title>
 
 <style>
@@ -417,7 +416,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{
       <div class="stock-toolbar">
         <input id="search" placeholder="Поиск по названию или артикулу" oninput="showProducts()">
         <button id="refreshButton" class="primary" onclick="loadProducts()">Обновить остатки</button>
-        <button id="downloadButton" class="primary" type="button" onclick="downloadStock()">Скачать Excel</button>
+        <button id="downloadButton" class="primary" type="button" onclick="downloadStock()">Скачать таблицу (CSV)</button>
       </div>
 
       <p id="status" class="status muted">Данные загружаются при входе.</p>
@@ -619,40 +618,66 @@ function showProducts(){
   `;
 }
 
-// ВЫГРУЗКА ВСЕХ ОСТАТКОВ В EXCEL
+// СКАЧИВАНИЕ ВСЕХ ОСТАТКОВ В CSV ДЛЯ EXCEL
 function downloadStock(){
+  const button=document.getElementById("downloadButton");
+
   if(!items.length){
-    setStatus("Нет данных для выгрузки","error");
+    setStatus("Нет данных для выгрузки. Сначала обновите остатки.","error");
     return;
   }
 
-  if(typeof XLSX==="undefined"){
-    setStatus("Не удалось загрузить модуль Excel. Проверьте подключение к интернету.","error");
-    return;
+  try{
+    // Выгружаем весь массив items, а не отфильтрованные товары
+    const headers=["Товар","Артикул","Остаток","Резерв","В пути"];
+
+    const escapeCSV=value=>{
+      const text=String(value??"");
+      return '"'+text.replace(/"/g,'""')+'"';
+    };
+
+    const rows=items.map(x=>[
+      x.product??"",
+      x.article??"",
+      Number(x.stock||0),
+      Number(x.reserve||0),
+      Number(x.inTransit||0)
+    ]);
+
+    const csv=[
+      headers.map(escapeCSV).join(";"),
+      ...rows.map(row=>row.map(escapeCSV).join(";"))
+    ].join("\r\n");
+
+    // BOM обеспечивает правильное отображение кириллицы в Excel
+    const blob=new Blob(["\uFEFF"+csv],{
+      type:"text/csv;charset=utf-8;"
+    });
+
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement("a");
+
+    const now=new Date();
+    const date=now.getFullYear()+"-"+
+      String(now.getMonth()+1).padStart(2,"0")+"-"+
+      String(now.getDate()).padStart(2,"0");
+
+    link.href=url;
+    link.download="Остатки_Q-log_"+date+".csv";
+    link.style.display="none";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+    setStatus("Файл успешно подготовлен. Строк выгружено: "+items.length,"ok");
+
+  }catch(e){
+    console.error("Ошибка выгрузки:",e);
+    setStatus("Ошибка при создании файла: "+e.message,"error");
   }
-
-  const rows=items.map(x=>({
-    "Товар":x.product??"",
-    "Артикул":x.article??"",
-    "Остаток":Number(x.stock||0),
-    "Резерв":Number(x.reserve||0),
-    "В пути":Number(x.inTransit||0)
-  }));
-
-  const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!cols"]=[
-    {wch:35},{wch:20},{wch:14},{wch:14},{wch:14}
-  ];
-
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,"Остатки");
-
-  const now=new Date();
-  const date=now.getFullYear()+"-"+
-    String(now.getMonth()+1).padStart(2,"0")+"-"+
-    String(now.getDate()).padStart(2,"0");
-
-  XLSX.writeFile(wb,"Остатки_Q-log_"+date+".xlsx");
 }
 
 function logout(){
