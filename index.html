@@ -66,6 +66,17 @@ th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #edf1f6;font-size
 th{color:var(--muted);font-size:11px;background:#f6f8fc}.right{text-align:right}.qty{font-weight:700}
 tfoot td{background:#eaf2ff;color:#173b68;font-size:13px;font-weight:800;border-top:2px solid #c9dcf8;border-bottom:0;padding-top:13px;padding-bottom:13px}
 .note{font-size:11px;color:#94a1b2;margin-top:15px}
+.export-modal{position:fixed;inset:0;z-index:50;background:rgba(7,24,45,.62);display:flex;align-items:center;justify-content:center;padding:16px}
+.export-panel{width:min(680px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}
+.export-panel h2{font-size:20px;margin:0 0 8px;color:#173b68}
+.export-panel p{font-size:13px;line-height:1.5;color:#64758b;margin:0 0 14px}
+.export-panel textarea{display:block;width:100%;min-height:210px;resize:vertical;border:1px solid #dfe7f1;border-radius:12px;padding:12px;font:12px/1.45 Consolas,monospace;white-space:pre;overflow:auto;margin:0 0 14px}
+.export-actions{display:flex;flex-wrap:wrap;gap:9px}
+.export-actions button{border:0;border-radius:11px;padding:11px 14px;font-weight:700}
+.export-actions .secondary{background:#eaf2ff;color:#1d5db3}
+.export-actions .primary{margin:0}
+.export-close{float:right;background:#f0f3f8;color:#50627a;border:0;border-radius:10px;padding:7px 11px;font-size:18px}
+@media(max-width:520px){.export-panel{padding:17px;border-radius:16px}.export-panel h2{font-size:18px}.export-actions button{width:100%}}
 .bottom-nav{position:fixed;z-index:10;bottom:16px;left:50%;transform:translateX(-50%);width:min(700px,calc(100% - 28px));padding:8px;border-radius:21px;background:linear-gradient(110deg,#0c2340,#173f6c);box-shadow:0 14px 38px rgba(9,34,64,.25);display:grid;grid-template-columns:repeat(4,1fr)}
 .nav-item{background:transparent;border:0;border-radius:15px;color:#c5d4e7;padding:9px 5px;font-size:11px}.nav-item b{display:block;font-size:18px;margin-bottom:5px}.nav-item.active{background:linear-gradient(120deg,#347ce5,#2462c8);color:white}
 @media(max-width:760px){
@@ -158,12 +169,29 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #79aa
  <button class="nav-item" type="button" onclick="openSection('tasks')"><b>☷</b>Заявки</button>
  <button class="nav-item" type="button" onclick="logout()"><b>○</b>Выход</button>
 </nav>
+<div id="exportModal" class="export-modal hidden" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
+ <div class="export-panel">
+  <button class="export-close" type="button" onclick="closeExportModal()" aria-label="Закрыть">×</button>
+  <h2 id="exportTitle">Экспорт остатков Q-log</h2>
+  <p id="exportHelp">Файл CSV сформирован. Встроенный просмотр может запрещать автоматическое скачивание. Можно открыть таблицу отдельно или скопировать её содержимое.</p>
+  <textarea id="exportText" readonly spellcheck="false" aria-label="Содержимое CSV"></textarea>
+  <div class="export-actions">
+   <button class="primary" type="button" onclick="openExportInTab()">Открыть CSV отдельно</button>
+   <button class="secondary" type="button" onclick="copyExportData()">Скопировать CSV</button>
+   <button id="shareExportButton" class="secondary hidden" type="button" onclick="shareExportFile()">Поделиться / сохранить файл</button>
+   <button class="secondary" type="button" onclick="closeExportModal()">Закрыть</button>
+  </div>
+ </div>
+</div>
 <script>
 'use strict';
 const API_URL = 'https://q-log-server.onrender.com';
 let authHeader = '';
 let items = [];
 let isLoading = false;
+let exportBlob = null;
+let exportObjectUrl = ''; 
+let exportFileName = '';
 
 const sectionInfo = {
  fbo: ['Отгрузки FBO', 'История отгрузок с маркетплейсов появится здесь после подключения журнала операций.', '⇧'],
@@ -339,24 +367,71 @@ function downloadStock() {
    Number(item.reserve || 0), Number(item.inTransit || 0)
   ]);
   const csv = [headers.map(escapeCSV).join(';'), ...rows.map(row => row.map(escapeCSV).join(';'))].join('\r\n');
-  const blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'});
   const now = new Date();
   const date = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-  const fileName = 'Остатки_Q-log_' + date + '.csv';
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = fileName;
-  link.style.display = 'none';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setStatus('Файл «' + fileName + '» подготовлен к скачиванию (' + items.length + ' строк).', 'ok');
-  window.setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+  exportFileName = 'Остатки_Q-log_' + date + '.csv';
+
+  if (exportObjectUrl) URL.revokeObjectURL(exportObjectUrl);
+  exportBlob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'});
+  exportObjectUrl = URL.createObjectURL(exportBlob);
+  byId('exportText').value = csv;
+  byId('exportModal').classList.remove('hidden');
+
+  const shareButton = byId('shareExportButton');
+  const exportFile = typeof File !== 'undefined' ? new File([exportBlob], exportFileName, {type: 'text/csv;charset=utf-8'}) : null;
+  const canShareFile = !!(exportFile && navigator.share && navigator.canShare && navigator.canShare({files: [exportFile]}));
+  shareButton.classList.toggle('hidden', !canShareFile);
+
+  setStatus('CSV подготовлен: ' + items.length + ' строк. Выберите способ сохранения в открывшемся окне.', 'ok');
  } catch (e) {
   console.error('Ошибка выгрузки:', e);
   setStatus('Ошибка при создании файла: ' + (e && e.message ? e.message : 'неизвестная ошибка'), 'error');
  }
+}
+
+function openExportInTab() {
+ if (!exportObjectUrl) return;
+ const opened = window.open(exportObjectUrl, '_blank');
+ if (opened) {
+  byId('exportHelp').textContent = 'CSV открыт в отдельной вкладке. В ней можно воспользоваться меню браузера, чтобы сохранить содержимое. Имя файла при сохранении укажите: ' + exportFileName;
+ } else {
+  byId('exportHelp').textContent = 'Браузер запретил открытие отдельной вкладки. Используйте кнопку «Скопировать CSV» ниже, затем вставьте данные в текстовый редактор и сохраните файл с расширением .csv.';
+ }
+}
+
+async function copyExportData() {
+ const area = byId('exportText');
+ try {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+   await navigator.clipboard.writeText(area.value);
+  } else {
+   area.focus();
+   area.select();
+   const copied = document.execCommand('copy');
+   if (!copied) throw new Error('Копирование не поддерживается браузером');
+  }
+  byId('exportHelp').textContent = 'Данные скопированы. Вставьте их в Блокнот или другой текстовый редактор и сохраните файл с именем ' + exportFileName + ' в кодировке UTF-8.';
+ } catch (e) {
+  area.focus();
+  area.select();
+  byId('exportHelp').textContent = 'Автоматическое копирование запрещено браузером. Текст CSV выделен: нажмите Ctrl+C, вставьте его в Блокнот и сохраните как ' + exportFileName + ' в кодировке UTF-8.';
+ }
+}
+
+async function shareExportFile() {
+ if (!exportBlob || !exportFileName || !navigator.share || typeof File === 'undefined') return;
+ try {
+  const file = new File([exportBlob], exportFileName, {type: 'text/csv;charset=utf-8'});
+  await navigator.share({files: [file], title: 'Остатки Q-log'});
+ } catch (e) {
+  if (!e || e.name !== 'AbortError') {
+   byId('exportHelp').textContent = 'Не удалось открыть системное меню отправки. Используйте открытие CSV отдельно или копирование данных.';
+  }
+ }
+}
+
+function closeExportModal() {
+ byId('exportModal').classList.add('hidden');
 }
 
 function logout() {
